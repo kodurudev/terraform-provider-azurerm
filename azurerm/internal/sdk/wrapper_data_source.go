@@ -32,7 +32,7 @@ func (rw *DataSourceWrapper) DataSource() (*schema.Resource, error) {
 	resource := schema.Resource{
 		Schema: *resourceSchema,
 		Read: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := runArgs(d, meta, &rw.logger)
+			ctx, metaData := runArgs(d, meta, rw.logger)
 			return rw.dataSource.Read().Func(ctx, metaData)
 		},
 		Timeouts: &schema.ResourceTimeout{

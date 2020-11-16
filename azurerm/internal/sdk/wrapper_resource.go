@@ -34,7 +34,7 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 		Schema: *resourceSchema,
 
 		Create: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := runArgs(d, meta, &rw.logger)
+			ctx, metaData := runArgs(d, meta, rw.logger)
 			err := rw.resource.Create().Func(ctx, metaData)
 			if err != nil {
 				return err
@@ -44,11 +44,11 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 
 		// looks like these could be reused, easiest if they're not
 		Read: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := runArgs(d, meta, &rw.logger)
+			ctx, metaData := runArgs(d, meta, rw.logger)
 			return rw.resource.Read().Func(ctx, metaData)
 		},
 		Delete: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := runArgs(d, meta, &rw.logger)
+			ctx, metaData := runArgs(d, meta, rw.logger)
 			return rw.resource.Delete().Func(ctx, metaData)
 		},
 
@@ -79,7 +79,7 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 
 	if v, ok := rw.resource.(ResourceWithUpdate); ok {
 		resource.Update = func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := runArgs(d, meta, &rw.logger)
+			ctx, metaData := runArgs(d, meta, rw.logger)
 			err := v.Update().Func(ctx, metaData)
 			if err != nil {
 				return err

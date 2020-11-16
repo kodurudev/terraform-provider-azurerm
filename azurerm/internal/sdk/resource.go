@@ -48,6 +48,6 @@ type ResourceFunc struct {
 
 type ResourceMetaData struct {
 	Client       *clients.Client
-	Logger       *Logger
+	Logger       Logger
 	ResourceData *schema.ResourceData
 }
