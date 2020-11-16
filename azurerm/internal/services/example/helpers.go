@@ -3,13 +3,14 @@ package example
 import (
 	"context"
 	"fmt"
+	"log"
+	"reflect"
+	"time"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/clients"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/resourceid"
 	azSchema "github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/schema"
-	"log"
-	"reflect"
-	"time"
 )
 
 type Logger interface {

@@ -1,10 +1,11 @@
 package example
 
 import (
-	"github.com/google/go-cmp/cmp"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"reflect"
 	"testing"
+
+	"github.com/google/go-cmp/cmp"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
 func TestDecode(t *testing.T) {
