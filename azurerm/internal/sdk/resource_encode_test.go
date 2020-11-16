@@ -124,12 +124,15 @@ func TestResourceEncode_TopLevelOmitted(t *testing.T) {
 
 func TestResourceEncode_TopLevelComputed(t *testing.T) {
 	type SimpleType struct {
-		ComputedString        string   `hcl:"computed_string" computed:"true"`
-		ComputedNumber        int      `hcl:"computed_number" computed:"true"`
-		ComputedBool          bool     `hcl:"computed_bool" computed:"true"`
-		ComputedListOfNumbers []int    `hcl:"computed_list_of_numbers" computed:"true"`
-		ComputedListOfStrings []string `hcl:"computed_list_of_strings" computed:"true"`
-		// TODO: computed maps
+		ComputedString        string             `hcl:"computed_string" computed:"true"`
+		ComputedNumber        int                `hcl:"computed_number" computed:"true"`
+		ComputedBool          bool               `hcl:"computed_bool" computed:"true"`
+		ComputedListOfNumbers []int              `hcl:"computed_list_of_numbers" computed:"true"`
+		ComputedListOfStrings []string           `hcl:"computed_list_of_strings" computed:"true"`
+		ComputedMapOfBools    map[string]bool    `hcl:"computed_map_of_bools" computed:"true"`
+		ComputedMapOfFloats   map[string]float64 `hcl:"computed_map_of_floats" computed:"true"`
+		ComputedMapOfInts     map[string]int     `hcl:"computed_map_of_ints" computed:"true"`
+		ComputedMapOfStrings  map[string]string  `hcl:"computed_map_of_strings" computed:"true"`
 	}
 	encodeTestData{
 		Input: &SimpleType{
@@ -142,6 +145,23 @@ func TestResourceEncode_TopLevelComputed(t *testing.T) {
 				"you",
 				"heard",
 			},
+			ComputedMapOfBools: map[string]bool{
+				"hello": true,
+				"world": false,
+			},
+			ComputedMapOfFloats: map[string]float64{
+				"hello": 1.8965345678,
+				"world": 2.0,
+			},
+			ComputedMapOfInts: map[string]int{
+				"first":  1,
+				"second": 2,
+				"third":  3,
+			},
+			ComputedMapOfStrings: map[string]string{
+				"hello": "world",
+				"bingo": "bango",
+			},
 		},
 		Expected: &map[string]interface{}{
 			"computed_string":          "je suis computed",
@@ -152,6 +172,23 @@ func TestResourceEncode_TopLevelComputed(t *testing.T) {
 				"have",
 				"you",
 				"heard",
+			},
+			"computed_map_of_bool": map[string]interface{}{
+				"hello": true,
+				"world": false,
+			},
+			"computed_map_of_floats": map[string]interface{}{
+				"hello": 1.8965345678,
+				"world": 2.0,
+			},
+			"computed_map_of_int": map[string]interface{}{
+				"first":  1,
+				"second": 2,
+				"third":  3,
+			},
+			"computed_map_of_string": map[string]interface{}{
+				"hello": "world",
+				"bingo": "bango",
 			},
 		},
 	}.test(t)
@@ -265,16 +302,20 @@ func TestResourceEncode_NestedOneLevelDeepSingle(t *testing.T) {
 
 func TestResourceEncode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 	type Inner struct {
-		String        string            `hcl:"string"`
-		Number        int               `hcl:"number"`
-		Price         float64           `hcl:"price"`
-		Enabled       bool              `hcl:"enabled"`
-		ListOfFloats  []float64         `hcl:"list_of_floats"`
-		ListOfNumbers []int             `hcl:"list_of_numbers"`
-		ListOfStrings []string          `hcl:"list_of_strings"`
-		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
-		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
-		MapOfStrings  map[string]string `hcl:"map_of_strings"`
+		String               string             `hcl:"string"`
+		Number               int                `hcl:"number"`
+		Price                float64            `hcl:"price"`
+		Enabled              bool               `hcl:"enabled"`
+		ListOfFloats         []float64          `hcl:"list_of_floats"`
+		ListOfNumbers        []int              `hcl:"list_of_numbers"`
+		ListOfStrings        []string           `hcl:"list_of_strings"`
+		MapOfBools           map[string]bool    `hcl:"map_of_bools"`
+		MapOfNumbers         map[string]int     `hcl:"map_of_numbers"`
+		MapOfStrings         map[string]string  `hcl:"map_of_strings"`
+		ComputedMapOfBools   map[string]bool    `hcl:"computed_map_of_bools" computed:"true"`
+		ComputedMapOfFloats  map[string]float64 `hcl:"computed_map_of_floats" computed:"true"`
+		ComputedMapOfInts    map[string]int     `hcl:"computed_map_of_ints" computed:"true"`
+		ComputedMapOfStrings map[string]string  `hcl:"computed_map_of_strings" computed:"true"`
 	}
 	type Type struct {
 		NestedObject []Inner `hcl:"inner"`
@@ -289,16 +330,20 @@ func TestResourceEncode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 			"inner": []interface{}{
 				// TODO: can we remove the pointer here, and return the value directly? (and on the others)
 				&map[string]interface{}{
-					"number":          int64(0),
-					"price":           float64(0),
-					"string":          "",
-					"enabled":         false,
-					"list_of_floats":  []float64{},
-					"list_of_numbers": []int{},
-					"list_of_strings": []string{},
-					"map_of_bools":    map[string]interface{}{},
-					"map_of_numbers":  map[string]interface{}{},
-					"map_of_strings":  map[string]interface{}{},
+					"number":                 int64(0),
+					"price":                  float64(0),
+					"string":                 "",
+					"enabled":                false,
+					"list_of_floats":         []float64{},
+					"list_of_numbers":        []int{},
+					"list_of_strings":        []string{},
+					"map_of_bools":           map[string]interface{}{},
+					"map_of_numbers":         map[string]interface{}{},
+					"map_of_strings":         map[string]interface{}{},
+					"computed_map_of_bool":   map[string]interface{}{},
+					"computed_map_of_floats": map[string]interface{}{},
+					"computed_map_of_int":    map[string]interface{}{},
+					"computed_map_of_string": map[string]interface{}{},
 				},
 			},
 		},

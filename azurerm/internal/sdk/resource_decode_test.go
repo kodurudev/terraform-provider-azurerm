@@ -24,6 +24,10 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 		//MapOfBools    map[string]bool   `hcl:"map_of_bools"`   // TODO: fixme
 		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
 		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
+		ComputedMapOfBools   map[string]bool    `hcl:"computed_map_of_bools" computed:"true"`
+		ComputedMapOfFloats  map[string]float64 `hcl:"computed_map_of_floats" computed:"true"`
+		ComputedMapOfInts    map[string]int     `hcl:"computed_map_of_ints" computed:"true"`
+		ComputedMapOfStrings map[string]string  `hcl:"computed_map_of_strings" computed:"true"`
 	}
 	decodeTestData{
 		State: map[string]interface{}{
@@ -56,6 +60,10 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 			//	"guten":   "tag",
 			//	"morning": "alvaro",
 			//},
+			"computed_map_of_bools":   []interface{}{},
+			"computed_map_of_floats":  []interface{}{},
+			"computed_map_of_ints":    []interface{}{},
+			"computed_map_of_strings": []interface{}{},
 		},
 		Input: &SimpleType{},
 		Expected: &SimpleType{
@@ -87,6 +95,10 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 			//	"guten":   "tag",
 			//	"morning": "alvaro",
 			//},
+			ComputedMapOfBools:   map[string]bool{},
+			ComputedMapOfFloats:  map[string]float64{},
+			ComputedMapOfInts:    map[string]int{},
+			ComputedMapOfStrings: map[string]string{},
 		},
 		ExpectError: false,
 	}.test(t)
@@ -145,18 +157,8 @@ func TestDecode_TopLevelFieldsComputed(t *testing.T) {
 				"heard",
 			},
 		},
-		Input: &SimpleType{},
-		Expected: &SimpleType{
-			ComputedString:        "je suis computed",
-			ComputedNumber:        732,
-			ComputedBool:          true,
-			ComputedListOfNumbers: []int{1, 2, 3},
-			ComputedListOfStrings: []string{
-				"have",
-				"you",
-				"heard",
-			},
-		},
+		Input:       &SimpleType{},
+		Expected:    &SimpleType{},
 		ExpectError: false,
 	}.test(t)
 }
@@ -610,23 +612,6 @@ func TestResourceDecode_NestedThreeLevelsDeepMultipleItems(t *testing.T) {
 				},
 			},
 		},
-	}.test(t)
-}
-
-func TestDecode(t *testing.T) {
-	decodeTestData{
-		State: map[string]interface{}{
-			"map": map[string]interface{}{
-				"bingo": "bango",
-			},
-		},
-		Input: &ExampleObj{},
-		Expected: &ExampleObj{
-			Map: map[string]string{
-				"bingo": "bango",
-			},
-		},
-		ExpectError: false,
 	}.test(t)
 }
 
