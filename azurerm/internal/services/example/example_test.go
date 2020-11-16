@@ -8,274 +8,274 @@ import (
 )
 
 func TestDecode(t *testing.T) {
-	testCases := []struct{
-		Name string
-		Input map[string]interface{}
-		Expected *ExampleObj
+	testCases := []struct {
+		Name        string
+		Input       map[string]interface{}
+		Expected    *ExampleObj
 		ExpectError bool
-	}{/*
-		{
-			Name: "top level - name",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - everything",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-				"float": 123.4,
-				"number": 123,
-				"enabled": false,
-			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - list",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-				"float": 123.4,
-				"number": 123,
-				"enabled": false,
-				"list": []interface{}{
-					map[string]interface{}{
-						"name": "first",
-					},
+	}{ /*
+			{
+				Name: "top level - name",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
 				},
-			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-				List: []NetworkList{{
-					Name: "first",
-				}},
-			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - list in lists",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-				"float": 123.4,
-				"number": 123,
-				"enabled": false,
-				"list": []interface{}{
-					map[string]interface{}{
-						"name": "first",
-						"inner": []interface{}{
-							map[string]interface{}{
-								"name": "get-a-mac",
-							},
-						},
-					},
+				Expected: &ExampleObj{
+					Name: "bingo bango",
 				},
+				ExpectError: false,
 			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-				List: []NetworkList{{
-					Name: "first",
-					Inner: []NetworkInner{{
-						Name: "get-a-mac",
-					}},
-				}},
-			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - everything",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-				"float": 123.4,
-				"number": 123,
-				"enabled": false,
-				"networks": []interface{}{"network1", "network2", "network3"},
-				"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
-				"list": []interface{}{
-					map[string]interface{}{
-						"name": "first",
-						"inner": []interface{}{
-							map[string]interface{}{
-								"name": "get-a-mac",
-							},
-						},
-					},
+			{
+				Name: "top level - everything",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
+					"float": 123.4,
+					"number": 123,
+					"enabled": false,
 				},
-				"set": schema.NewSet(FakeHashSchema(),
-					[]interface{}{
+				Expected: &ExampleObj{
+					Name: "bingo bango",
+					Float: 123.4,
+					Number: 123,
+					Enabled: false,
+				},
+				ExpectError: false,
+			},
+			{
+				Name: "top level - list",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
+					"float": 123.4,
+					"number": 123,
+					"enabled": false,
+					"list": []interface{}{
 						map[string]interface{}{
-							"name": "setname",
-						},
-					}),
-			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-				Networks: []string{"network1", "network2", "network3"},
-				NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
-				List: []NetworkList{{
-					Name: "first",
-					Inner: []NetworkInner{{
-						Name: "get-a-mac",
-					}},
-				}},
-				Set: []NetworkSet{{
-					Name: "setname",
-				}},
-			},
-			ExpectError: false,
-		},
-		{
-			Name: "nests",
-			Input: map[string]interface{}{
-				"name": "bingo bango",
-				"float": 123.4,
-				"number": 123,
-				"enabled": false,
-				"networks": []interface{}{"network1", "network2", "network3"},
-				"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
-				"list": []interface{}{
-					map[string]interface{}{
-						"name": "first",
-						"inner": []interface{}{
-							map[string]interface{}{
-								"name": "get-a-mac",
-								"inner": []interface{}{
-									map[string]interface{}{
-										"name": "innerinner",
-										"should_be_fine": true,
-									},
-								},
-								"set": schema.NewSet(FakeHashSchema(),
-									[]interface{}{
-										map[string]interface{}{
-											"name": "nestedsetname",
-										},
-									}),
-							},
+							"name": "first",
 						},
 					},
-					map[string]interface{}{
-						"name": "second",
-						"inner": []interface{}{
-							map[string]interface{}{
-								"name": "get-a-mac2",
-								"inner": []interface{}{
-									map[string]interface{}{
-										"name": "innerinner2",
-										"should_be_fine": true,
-									},
+				},
+				Expected: &ExampleObj{
+					Name: "bingo bango",
+					Float: 123.4,
+					Number: 123,
+					Enabled: false,
+					List: []NetworkList{{
+						Name: "first",
+					}},
+				},
+				ExpectError: false,
+			},
+			{
+				Name: "top level - list in lists",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
+					"float": 123.4,
+					"number": 123,
+					"enabled": false,
+					"list": []interface{}{
+						map[string]interface{}{
+							"name": "first",
+							"inner": []interface{}{
+								map[string]interface{}{
+									"name": "get-a-mac",
 								},
-								"set": schema.NewSet(FakeHashSchema(),
-									[]interface{}{
-										map[string]interface{}{
-											"name": "nestedsetname2",
-										},
-									}),
 							},
 						},
 					},
 				},
-				"set": schema.NewSet(FakeHashSchema(),
-					[]interface{}{
-						map[string]interface{}{
-							"name": "setname",
-						},
-					}),
-			},
-			Expected: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-				Networks: []string{"network1", "network2", "network3"},
-				NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
-				List: []NetworkList{
-					{
+				Expected: &ExampleObj{
+					Name: "bingo bango",
+					Float: 123.4,
+					Number: 123,
+					Enabled: false,
+					List: []NetworkList{{
 						Name: "first",
 						Inner: []NetworkInner{{
 							Name: "get-a-mac",
-							Inner: []InnerInner{{
-								Name: "innerinner",
-								ShouldBeFine: true,
-							}},
-							Set: []NetworkListSet{{
-								Name: "nestedsetname",
-							}},
 						}},
-					},
-					{
-						Name: "second",
-						Inner: []NetworkInner{{
-							Name: "get-a-mac2",
-							Inner: []InnerInner{{
-								Name: "innerinner2",
-								ShouldBeFine: true,
-							}},
-							Set: []NetworkListSet{{
-								Name: "nestedsetname2",
-							}},
-						}},
-					},
+					}},
 				},
-				Set: []NetworkSet{{
-					Name: "setname",
-				}},
+				ExpectError: false,
 			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - int lists/sets",
-			Input: map[string]interface{}{
-				"int_list": []interface{}{1,2,3},
-				"int_set": []interface{}{3,4,5},
+			{
+				Name: "top level - everything",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
+					"float": 123.4,
+					"number": 123,
+					"enabled": false,
+					"networks": []interface{}{"network1", "network2", "network3"},
+					"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
+					"list": []interface{}{
+						map[string]interface{}{
+							"name": "first",
+							"inner": []interface{}{
+								map[string]interface{}{
+									"name": "get-a-mac",
+								},
+							},
+						},
+					},
+					"set": schema.NewSet(FakeHashSchema(),
+						[]interface{}{
+							map[string]interface{}{
+								"name": "setname",
+							},
+						}),
+				},
+				Expected: &ExampleObj{
+					Name: "bingo bango",
+					Float: 123.4,
+					Number: 123,
+					Enabled: false,
+					Networks: []string{"network1", "network2", "network3"},
+					NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
+					List: []NetworkList{{
+						Name: "first",
+						Inner: []NetworkInner{{
+							Name: "get-a-mac",
+						}},
+					}},
+					Set: []NetworkSet{{
+						Name: "setname",
+					}},
+				},
+				ExpectError: false,
 			},
-			Expected: &ExampleObj{
-				IntList: []int{1,2,3},
-				IntSet: []int{3,4,5},
+			{
+				Name: "nests",
+				Input: map[string]interface{}{
+					"name": "bingo bango",
+					"float": 123.4,
+					"number": 123,
+					"enabled": false,
+					"networks": []interface{}{"network1", "network2", "network3"},
+					"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
+					"list": []interface{}{
+						map[string]interface{}{
+							"name": "first",
+							"inner": []interface{}{
+								map[string]interface{}{
+									"name": "get-a-mac",
+									"inner": []interface{}{
+										map[string]interface{}{
+											"name": "innerinner",
+											"should_be_fine": true,
+										},
+									},
+									"set": schema.NewSet(FakeHashSchema(),
+										[]interface{}{
+											map[string]interface{}{
+												"name": "nestedsetname",
+											},
+										}),
+								},
+							},
+						},
+						map[string]interface{}{
+							"name": "second",
+							"inner": []interface{}{
+								map[string]interface{}{
+									"name": "get-a-mac2",
+									"inner": []interface{}{
+										map[string]interface{}{
+											"name": "innerinner2",
+											"should_be_fine": true,
+										},
+									},
+									"set": schema.NewSet(FakeHashSchema(),
+										[]interface{}{
+											map[string]interface{}{
+												"name": "nestedsetname2",
+											},
+										}),
+								},
+							},
+						},
+					},
+					"set": schema.NewSet(FakeHashSchema(),
+						[]interface{}{
+							map[string]interface{}{
+								"name": "setname",
+							},
+						}),
+				},
+				Expected: &ExampleObj{
+					Name: "bingo bango",
+					Float: 123.4,
+					Number: 123,
+					Enabled: false,
+					Networks: []string{"network1", "network2", "network3"},
+					NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
+					List: []NetworkList{
+						{
+							Name: "first",
+							Inner: []NetworkInner{{
+								Name: "get-a-mac",
+								Inner: []InnerInner{{
+									Name: "innerinner",
+									ShouldBeFine: true,
+								}},
+								Set: []NetworkListSet{{
+									Name: "nestedsetname",
+								}},
+							}},
+						},
+						{
+							Name: "second",
+							Inner: []NetworkInner{{
+								Name: "get-a-mac2",
+								Inner: []InnerInner{{
+									Name: "innerinner2",
+									ShouldBeFine: true,
+								}},
+								Set: []NetworkListSet{{
+									Name: "nestedsetname2",
+								}},
+							}},
+						},
+					},
+					Set: []NetworkSet{{
+						Name: "setname",
+					}},
+				},
+				ExpectError: false,
 			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - float lists/sets",
-			Input: map[string]interface{}{
-				"float_list": []interface{}{1.1,2.2,3.3},
-				"float_set": []interface{}{3.3,4.4,5.5},
+			{
+				Name: "top level - int lists/sets",
+				Input: map[string]interface{}{
+					"int_list": []interface{}{1,2,3},
+					"int_set": []interface{}{3,4,5},
+				},
+				Expected: &ExampleObj{
+					IntList: []int{1,2,3},
+					IntSet: []int{3,4,5},
+				},
+				ExpectError: false,
 			},
-			Expected: &ExampleObj{
-				FloatList: []float64{1.1,2.2,3.3},
-				FloatSet: []float64{3.3,4.4,5.5},
+			{
+				Name: "top level - float lists/sets",
+				Input: map[string]interface{}{
+					"float_list": []interface{}{1.1,2.2,3.3},
+					"float_set": []interface{}{3.3,4.4,5.5},
+				},
+				Expected: &ExampleObj{
+					FloatList: []float64{1.1,2.2,3.3},
+					FloatSet: []float64{3.3,4.4,5.5},
+				},
+				ExpectError: false,
 			},
-			ExpectError: false,
-		},
-		{
-			Name: "top level - bool lists/sets",
-			Input: map[string]interface{}{
-				"bool_list": []interface{}{true,false,true},
-				"bool_set": []interface{}{false,true,false},
-			},
-			Expected: &ExampleObj{
-				BoolList: []bool{true,false,true},
-				BoolSet: []bool{false,true,false},
-			},
-			ExpectError: false,
-		},*/
+			{
+				Name: "top level - bool lists/sets",
+				Input: map[string]interface{}{
+					"bool_list": []interface{}{true,false,true},
+					"bool_set": []interface{}{false,true,false},
+				},
+				Expected: &ExampleObj{
+					BoolList: []bool{true,false,true},
+					BoolSet: []bool{false,true,false},
+				},
+				ExpectError: false,
+			},*/
 		{
 			Name: "top level - map",
 			Input: map[string]interface{}{
@@ -292,13 +292,12 @@ func TestDecode(t *testing.T) {
 		},
 	}
 
-
 	for _, v := range testCases {
 		obj := &ExampleObj{}
 		if err := decodeHelper(obj, v.Input); err != nil && !v.ExpectError {
 			t.Fatalf("error decoding into obj: %+v", err)
 		}
-		
+
 		if !reflect.DeepEqual(obj, v.Expected) {
 			t.Fatalf("ExampleObj mismatch\n\n Expected: %+v\n\n Received %+v\n\n", v.Expected, obj)
 		}
@@ -306,10 +305,10 @@ func TestDecode(t *testing.T) {
 }
 
 func TestEncode(t *testing.T) {
-	testCases := []struct{
-		Name string
-		Input *ExampleObj
-		Expected map[string]interface{}
+	testCases := []struct {
+		Name        string
+		Input       *ExampleObj
+		Expected    map[string]interface{}
 		ExpectError bool
 	}{
 		{
@@ -318,95 +317,95 @@ func TestEncode(t *testing.T) {
 				Name: "bingo bango",
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
-				"enabled": false,
-				"float": float64(0),
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "bingo bango",
+				"enabled":      false,
+				"float":        float64(0),
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(0),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(0),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - everything",
 			Input: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
+				Name:    "bingo bango",
+				Float:   123.4,
+				Number:  123,
 				Enabled: false,
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
-				"enabled": false,
-				"float": 123.4,
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "bingo bango",
+				"enabled":      false,
+				"float":        123.4,
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(123),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(123),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - list",
 			Input: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
+				Name:    "bingo bango",
+				Float:   123.4,
+				Number:  123,
 				Enabled: false,
 				List: []NetworkList{{
 					Name: "first",
 				}},
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
+				"name":    "bingo bango",
 				"enabled": false,
-				"float": 123.4,
+				"float":   123.4,
 				"list": []interface{}{
 					&map[string]interface{}{
-						"name": "first",
+						"name":  "first",
 						"inner": []interface{}{},
 					},
 				},
-				"networks": []string(nil),
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(123),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(123),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - list in lists",
 			Input: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
+				Name:    "bingo bango",
+				Float:   123.4,
+				Number:  123,
 				Enabled: false,
 				List: []NetworkList{{
 					Name: "first",
@@ -416,44 +415,44 @@ func TestEncode(t *testing.T) {
 				}},
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
+				"name":    "bingo bango",
 				"enabled": false,
-				"float": 123.4,
+				"float":   123.4,
 				"list": []interface{}{
 					&map[string]interface{}{
 						"name": "first",
 						"inner": []interface{}{
 							&map[string]interface{}{
-								"name": "get-a-mac",
+								"name":  "get-a-mac",
 								"inner": []interface{}{},
-								"set": []interface{}{},
+								"set":   []interface{}{},
 							},
 						},
 					},
 				},
-				"networks": []string(nil),
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(123),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(123),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - everything",
 			Input: &ExampleObj{
-				Name: "bingo bango",
-				Float: 123.4,
-				Number: 123,
-				Enabled: false,
-				Networks: []string{"network1", "network2", "network3"},
+				Name:        "bingo bango",
+				Float:       123.4,
+				Number:      123,
+				Enabled:     false,
+				Networks:    []string{"network1", "network2", "network3"},
 				NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
 				List: []NetworkList{{
 					Name: "first",
@@ -466,35 +465,35 @@ func TestEncode(t *testing.T) {
 				}},
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
+				"name":    "bingo bango",
 				"enabled": false,
-				"float": 123.4,
+				"float":   123.4,
 				"list": []interface{}{
 					&map[string]interface{}{
 						"name": "first",
 						"inner": []interface{}{
 							&map[string]interface{}{
-								"name": "get-a-mac",
+								"name":  "get-a-mac",
 								"inner": []interface{}{},
-								"set": []interface{}{},
+								"set":   []interface{}{},
 							},
 						},
 					},
 				},
-				"networks": []string{"network1", "network2", "network3"},
+				"networks":     []string{"network1", "network2", "network3"},
 				"networks_set": []string{"networkset1", "networkset2", "networkset3"},
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(123),
-				"output": "",
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(123),
+				"output":       "",
+				"map":          map[string]interface{}{},
 				"set": []interface{}{
 					&map[string]interface{}{
-						"name": "setname",
+						"name":  "setname",
 						"inner": []interface{}{},
 					},
 				},
@@ -504,10 +503,10 @@ func TestEncode(t *testing.T) {
 		{
 			Name: "nests",
 			Input: &ExampleObj{
-				Name:        "bingo bango",
-				Float:       123.4,
-				Number:      123,
-				Enabled:     false,
+				Name:    "bingo bango",
+				Float:   123.4,
+				Number:  123,
+				Enabled: false,
 				List: []NetworkList{
 					{
 						Name: "first",
@@ -541,9 +540,9 @@ func TestEncode(t *testing.T) {
 				}},
 			},
 			Expected: map[string]interface{}{
-				"name": "bingo bango",
+				"name":    "bingo bango",
 				"enabled": false,
-				"float": 123.4,
+				"float":   123.4,
 				"list": []interface{}{
 					&map[string]interface{}{
 						"name": "first",
@@ -552,7 +551,7 @@ func TestEncode(t *testing.T) {
 								"name": "get-a-mac",
 								"inner": []interface{}{
 									&map[string]interface{}{
-										"name": "innerinner",
+										"name":           "innerinner",
 										"should_be_fine": true,
 									},
 								},
@@ -571,7 +570,7 @@ func TestEncode(t *testing.T) {
 								"name": "get-a-mac2",
 								"inner": []interface{}{
 									&map[string]interface{}{
-										"name": "innerinner2",
+										"name":           "innerinner2",
 										"should_be_fine": true,
 									},
 								},
@@ -585,20 +584,20 @@ func TestEncode(t *testing.T) {
 					},
 				},
 
-				"networks": []string(nil),
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(123),
-				"output": "",
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(123),
+				"output":       "",
+				"map":          map[string]interface{}{},
 				"set": []interface{}{
 					&map[string]interface{}{
-						"name": "setname",
+						"name":  "setname",
 						"inner": []interface{}{},
 					},
 				},
@@ -608,78 +607,78 @@ func TestEncode(t *testing.T) {
 		{
 			Name: "top level - int lists/sets",
 			Input: &ExampleObj{
-				IntList: []int{1,2,3},
-				IntSet: []int{3,4,5},
+				IntList: []int{1, 2, 3},
+				IntSet:  []int{3, 4, 5},
 			},
 			Expected: map[string]interface{}{
-				"name": "",
-				"enabled": false,
-				"float": float64(0),
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "",
+				"enabled":      false,
+				"float":        float64(0),
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int{1,2,3},
-				"int_set": []int{3,4,5},
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(0),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int{1, 2, 3},
+				"int_set":      []int{3, 4, 5},
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(0),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - float lists/sets",
 			Input: &ExampleObj{
-				FloatList: []float64{1,2,3},
-				FloatSet: []float64{3,4,5},
+				FloatList: []float64{1, 2, 3},
+				FloatSet:  []float64{3, 4, 5},
 			},
 			Expected: map[string]interface{}{
-				"name": "",
-				"enabled": false,
-				"float": float64(0),
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "",
+				"enabled":      false,
+				"float":        float64(0),
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64{1,2,3},
-				"float_set": []float64{3,4,5},
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(0),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64{1, 2, 3},
+				"float_set":    []float64{3, 4, 5},
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(0),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
 		{
 			Name: "top level - bool lists/sets",
 			Input: &ExampleObj{
-				BoolList: []bool{true,false,true},
-				BoolSet: []bool{false,true,false},
+				BoolList: []bool{true, false, true},
+				BoolSet:  []bool{false, true, false},
 			},
 			Expected: map[string]interface{}{
-				"name": "",
-				"enabled": false,
-				"float": float64(0),
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "",
+				"enabled":      false,
+				"float":        float64(0),
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool{true,false,true},
-				"bool_set": []bool{false,true,false},
-				"number": int64(0),
-				"output": "",
-				"set": []interface{}{},
-				"map": map[string]interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool{true, false, true},
+				"bool_set":     []bool{false, true, false},
+				"number":       int64(0),
+				"output":       "",
+				"set":          []interface{}{},
+				"map":          map[string]interface{}{},
 			},
 			ExpectError: false,
 		},
@@ -691,21 +690,21 @@ func TestEncode(t *testing.T) {
 				},
 			},
 			Expected: map[string]interface{}{
-				"name": "",
-				"enabled": false,
-				"float": float64(0),
-				"list": []interface{}{},
-				"networks": []string(nil),
+				"name":         "",
+				"enabled":      false,
+				"float":        float64(0),
+				"list":         []interface{}{},
+				"networks":     []string(nil),
 				"networks_set": []string(nil),
-				"int_list": []int(nil),
-				"int_set": []int(nil),
-				"float_list": []float64(nil),
-				"float_set": []float64(nil),
-				"bool_list": []bool(nil),
-				"bool_set": []bool(nil),
-				"number": int64(0),
-				"output": "",
-				"set": []interface{}{},
+				"int_list":     []int(nil),
+				"int_set":      []int(nil),
+				"float_list":   []float64(nil),
+				"float_set":    []float64(nil),
+				"bool_list":    []bool(nil),
+				"bool_set":     []bool(nil),
+				"number":       int64(0),
+				"output":       "",
+				"set":          []interface{}{},
 				"map": map[string]interface{}{
 					"bingo": "bango",
 				},
@@ -740,7 +739,7 @@ func decodeHelper(input interface{}, config map[string]interface{}) error {
 			hclValue := config[val]
 
 			//TODO Actually check error
-			if err := setValue(input, hclValue,i); err != nil {
+			if err := setValue(input, hclValue, i); err != nil {
 				return err
 			}
 		}
@@ -752,7 +751,7 @@ func encodeHelper(input interface{}) (map[string]interface{}, error) {
 	objType := reflect.TypeOf(input).Elem()
 	objVal := reflect.ValueOf(input).Elem()
 
-	serialized,err := recurse(objType, objVal)
+	serialized, err := recurse(objType, objVal)
 	if err != nil {
 		return nil, err
 	}

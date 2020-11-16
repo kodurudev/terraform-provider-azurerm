@@ -12,7 +12,6 @@ import (
 	"time"
 )
 
-
 type Logger interface {
 	Info(message string)
 	InfoF(format string, args ...interface{})
@@ -193,7 +192,7 @@ func (rmd *ResourceMetaData) Encode(input interface{}) error {
 	objType := reflect.TypeOf(input).Elem()
 	objVal := reflect.ValueOf(input).Elem()
 
-	serialized,err := recurse(objType, objVal)
+	serialized, err := recurse(objType, objVal)
 	if err != nil {
 		return err
 	}
@@ -256,7 +255,7 @@ func recurse(objType reflect.Type, objVal reflect.Value) (*map[string]interface{
 						log.Printf("[SLICE] Index %d is %q", i, sv.Index(i).Interface())
 						log.Printf("[SLICE] Type %+v", sv.Type())
 						nestedType := sv.Index(i).Type()
-						nestedValue :=sv.Index(i)
+						nestedValue := sv.Index(i)
 						serialized, err := recurse(nestedType, nestedValue)
 						if err != nil {
 							panic(err)

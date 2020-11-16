@@ -56,7 +56,7 @@ func (r ExampleResource) Arguments() map[string]*schema.Schema {
 			},
 		},
 		"float": {
-			Type: schema.TypeFloat,
+			Type:     schema.TypeFloat,
 			Optional: true,
 		},
 		"float_list": {
@@ -88,7 +88,7 @@ func (r ExampleResource) Arguments() map[string]*schema.Schema {
 			},
 		},
 		"map": {
-			Type: schema.TypeMap,
+			Type:     schema.TypeMap,
 			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
@@ -126,7 +126,6 @@ func (r ExampleResource) Arguments() map[string]*schema.Schema {
 												Type:     schema.TypeBool,
 												Required: true,
 											},
-
 										},
 									},
 								},
@@ -172,7 +171,6 @@ func (r ExampleResource) Arguments() map[string]*schema.Schema {
 									Type:     schema.TypeBool,
 									Required: true,
 								},
-
 							},
 						},
 					},
@@ -197,26 +195,26 @@ func (r ExampleResource) ResourceType() string {
 
 // NOTE: i guess we could return schema object to ensure everything is mapped and valid idk
 type ExampleObj struct {
-	Name     string   `hcl:"name"`
-	Number   int      `hcl:"number"`
-	Output   string   `hcl:"output" computed:"true"`
-	Enabled  bool     `hcl:"enabled"`
-	Networks []string `hcl:"networks"`
-	NetworksSet []string `hcl:"networks_set"`
-	IntList []int `hcl:"int_list"`
-	IntSet []int `hcl:"int_set"`
-	FloatList []float64 `hcl:"float_list"`
-	FloatSet []float64 `hcl:"float_set"`
-	BoolList []bool `hcl:"bool_list"`
-	BoolSet []bool `hcl:"bool_set"`
-	List []NetworkList `hcl:"list"`
-	Set []NetworkSet `hcl:"set"`
-	Float float64 `hcl:"float"`
-	Map map[string]string `hcl:"map"`
+	Name        string            `hcl:"name"`
+	Number      int               `hcl:"number"`
+	Output      string            `hcl:"output" computed:"true"`
+	Enabled     bool              `hcl:"enabled"`
+	Networks    []string          `hcl:"networks"`
+	NetworksSet []string          `hcl:"networks_set"`
+	IntList     []int             `hcl:"int_list"`
+	IntSet      []int             `hcl:"int_set"`
+	FloatList   []float64         `hcl:"float_list"`
+	FloatSet    []float64         `hcl:"float_set"`
+	BoolList    []bool            `hcl:"bool_list"`
+	BoolSet     []bool            `hcl:"bool_set"`
+	List        []NetworkList     `hcl:"list"`
+	Set         []NetworkSet      `hcl:"set"`
+	Float       float64           `hcl:"float"`
+	Map         map[string]string `hcl:"map"`
 }
 
 type NetworkList struct {
-	Name string `hcl:"name"`
+	Name  string         `hcl:"name"`
 	Inner []NetworkInner `hcl:"inner"`
 }
 
@@ -225,19 +223,19 @@ type NetworkListSet struct {
 }
 
 type NetworkSet struct {
-	Name string `hcl:"name"`
+	Name  string       `hcl:"name"`
 	Inner []InnerInner `hcl:"inner"`
 }
 
 type NetworkInner struct {
-	Name string `hcl:"name"`
-	Inner []InnerInner `hcl:"inner"`
-	Set []NetworkListSet `hcl:"set"`
+	Name  string           `hcl:"name"`
+	Inner []InnerInner     `hcl:"inner"`
+	Set   []NetworkListSet `hcl:"set"`
 }
 
 type InnerInner struct {
-	Name string `hcl:"name"`
-	ShouldBeFine bool `hcl:"should_be_fine"`
+	Name         string `hcl:"name"`
+	ShouldBeFine bool   `hcl:"should_be_fine"`
 }
 
 func (r ExampleResource) Create() ResourceFunc {
@@ -248,13 +246,13 @@ func (r ExampleResource) Read() ResourceFunc {
 	return ResourceFunc{
 		Func: func(ctx context.Context, metadata ResourceMetaData) error {
 			return metadata.Encode(&ExampleObj{
-				Name:    "updated",
-				Number:  123,
-				Enabled: true,
-				Networks: []string{"123", "124"},
+				Name:        "updated",
+				Number:      123,
+				Enabled:     true,
+				Networks:    []string{"123", "124"},
 				NetworksSet: []string{"asdf", "qwer"},
-				IntList: []int{1,2,3},
-				IntSet: []int{3,4,5},
+				IntList:     []int{1, 2, 3},
+				IntSet:      []int{3, 4, 5},
 				List: []NetworkList{{
 					Name: "test1232",
 					Inner: []NetworkInner{
@@ -262,15 +260,15 @@ func (r ExampleResource) Read() ResourceFunc {
 							Name: "oiadsjfgoijs",
 							Inner: []InnerInner{
 								{
-									Name: "sure why not",
+									Name:         "sure why not",
 									ShouldBeFine: true,
 								},
 								{
-									Name: "sure why not",
+									Name:         "sure why not",
 									ShouldBeFine: true,
 								},
 								{
-									Name: "sure why not",
+									Name:         "sure why not",
 									ShouldBeFine: true,
 								},
 							},
@@ -284,9 +282,8 @@ func (r ExampleResource) Read() ResourceFunc {
 							},
 							Inner: []InnerInner{
 								{
-									Name: "sure why not",
+									Name:         "sure why not",
 									ShouldBeFine: true,
-
 								},
 							},
 						},
@@ -296,7 +293,7 @@ func (r ExampleResource) Read() ResourceFunc {
 					Name: "set1232",
 					Inner: []InnerInner{
 						{
-							Name: "do a thing",
+							Name:         "do a thing",
 							ShouldBeFine: true,
 						},
 					},
@@ -352,7 +349,6 @@ func CreateUpdate() ResourceFunc {
 			metadata.Logger.InfoF("Networks Set is %+v", obj.NetworksSet)
 			metadata.Logger.InfoF("List  is %+v", obj.List)
 			metadata.Logger.InfoF("Set  is %+v", obj.Set)
-
 
 			metadata.SetID(id)
 			return nil
