@@ -8,7 +8,14 @@ import (
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/clients"
 )
 
-// TODO: Data Source and Docs
+// TODO: Docs
+
+type DataSource interface {
+	Arguments() map[string]*schema.Schema
+	Attributes() map[string]*schema.Schema
+	ResourceType() string
+	Read() ResourceFunc
+}
 
 type Resource interface {
 	Arguments() map[string]*schema.Schema
@@ -21,6 +28,9 @@ type Resource interface {
 	Delete() ResourceFunc
 	IDValidationFunc() schema.SchemaValidateFunc
 }
+
+// TODO: resource with state migration
+// TODO: a generic state migration for updating ID's
 
 type ResourceWithUpdate interface {
 	Update() ResourceFunc
@@ -38,6 +48,6 @@ type ResourceFunc struct {
 
 type ResourceMetaData struct {
 	Client       *clients.Client
-	Logger       Logger
+	Logger       *Logger
 	ResourceData *schema.ResourceData
 }

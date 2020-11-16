@@ -1,12 +1,10 @@
 package sdk
 
 import (
-	"context"
 	"fmt"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/clients"
 	azSchema "github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/schema"
 )
 
@@ -23,7 +21,7 @@ func NewResourceWrapper(resource Resource) ResourceWrapper {
 }
 
 func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
-	resourceSchema, err := rw.schema()
+	resourceSchema, err := combineSchema(rw.resource.Arguments(), rw.resource.Attributes())
 	if err != nil {
 		return nil, fmt.Errorf("building Schema: %+v", err)
 	}
@@ -36,7 +34,7 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 		Schema: *resourceSchema,
 
 		Create: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := rw.runArgs(d, meta)
+			ctx, metaData := runArgs(d, meta, &rw.logger)
 			err := rw.resource.Create().Func(ctx, metaData)
 			if err != nil {
 				return err
@@ -46,11 +44,11 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 
 		// looks like these could be reused, easiest if they're not
 		Read: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := rw.runArgs(d, meta)
+			ctx, metaData := runArgs(d, meta, &rw.logger)
 			return rw.resource.Read().Func(ctx, metaData)
 		},
 		Delete: func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := rw.runArgs(d, meta)
+			ctx, metaData := runArgs(d, meta, &rw.logger)
 			return rw.resource.Delete().Func(ctx, metaData)
 		},
 
@@ -81,7 +79,7 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 
 	if v, ok := rw.resource.(ResourceWithUpdate); ok {
 		resource.Update = func(d *schema.ResourceData, meta interface{}) error {
-			ctx, metaData := rw.runArgs(d, meta)
+			ctx, metaData := runArgs(d, meta, &rw.logger)
 			err := v.Update().Func(ctx, metaData)
 			if err != nil {
 				return err
@@ -92,44 +90,4 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 	}
 
 	return &resource, nil
-}
-
-func (rw ResourceWrapper) runArgs(d *schema.ResourceData, meta interface{}) (context.Context, ResourceMetaData) {
-	ctx := meta.(*clients.Client).StopContext
-	client := meta.(*clients.Client)
-	metaData := ResourceMetaData{
-		Client:       client,
-		Logger:       rw.logger,
-		ResourceData: d,
-	}
-
-	return ctx, metaData
-}
-
-func (rw ResourceWrapper) schema() (*map[string]*schema.Schema, error) {
-	out := make(map[string]*schema.Schema, 0)
-
-	for k, v := range rw.resource.Arguments() {
-		if _, alreadyExists := out[k]; alreadyExists {
-			return nil, fmt.Errorf("%q already exists in the schema", k)
-		}
-
-		// TODO: if readonly
-
-		out[k] = v
-	}
-
-	for k, v := range rw.resource.Attributes() {
-		if _, alreadyExists := out[k]; alreadyExists {
-			return nil, fmt.Errorf("%q already exists in the schema", k)
-		}
-
-		// TODO: if editable
-
-		// every attribute has to be computed
-		v.Computed = true
-		out[k] = v
-	}
-
-	return &out, nil
 }
