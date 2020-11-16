@@ -6,6 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	azSchema "github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/schema"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/timeouts"
 )
 
 type ResourceWrapper struct {
@@ -35,21 +36,30 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 
 		Create: func(d *schema.ResourceData, meta interface{}) error {
 			ctx, metaData := runArgs(d, meta, rw.logger)
-			err := rw.resource.Create().Func(ctx, metaData)
+			wrappedCtx, cancel := timeouts.ForCreate(ctx, d)
+			defer cancel()
+			err := rw.resource.Create().Func(wrappedCtx, metaData)
 			if err != nil {
 				return err
 			}
-			return rw.resource.Read().Func(ctx, metaData)
+			// NOTE: whilst this may look like we should use the Read
+			// functions timeout here, we're still /technically/ in the
+			// Create function so reusing that timeout should be sufficient
+			return rw.resource.Read().Func(wrappedCtx, metaData)
 		},
 
 		// looks like these could be reused, easiest if they're not
 		Read: func(d *schema.ResourceData, meta interface{}) error {
 			ctx, metaData := runArgs(d, meta, rw.logger)
-			return rw.resource.Read().Func(ctx, metaData)
+			wrappedCtx, cancel := timeouts.ForRead(ctx, d)
+			defer cancel()
+			return rw.resource.Read().Func(wrappedCtx, metaData)
 		},
 		Delete: func(d *schema.ResourceData, meta interface{}) error {
 			ctx, metaData := runArgs(d, meta, rw.logger)
-			return rw.resource.Delete().Func(ctx, metaData)
+			wrappedCtx, cancel := timeouts.ForDelete(ctx, d)
+			defer cancel()
+			return rw.resource.Delete().Func(wrappedCtx, metaData)
 		},
 
 		Timeouts: &schema.ResourceTimeout{
@@ -80,11 +90,17 @@ func (rw *ResourceWrapper) Resource() (*schema.Resource, error) {
 	if v, ok := rw.resource.(ResourceWithUpdate); ok {
 		resource.Update = func(d *schema.ResourceData, meta interface{}) error {
 			ctx, metaData := runArgs(d, meta, rw.logger)
-			err := v.Update().Func(ctx, metaData)
+			wrappedCtx, cancel := timeouts.ForUpdate(ctx, d)
+			defer cancel()
+
+			err := v.Update().Func(wrappedCtx, metaData)
 			if err != nil {
 				return err
 			}
-			return rw.resource.Read().Func(ctx, metaData)
+			// whilst this may look like we should use the Update timeout here
+			// we're still "technically" in the update method, so reusing the
+			// Update's timeout should be fine
+			return rw.resource.Read().Func(wrappedCtx, metaData)
 		}
 		resource.Timeouts.Update = d(v.Update().Timeout)
 	}

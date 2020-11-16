@@ -37,7 +37,8 @@ func combineSchema(arguments map[string]*schema.Schema, attributes map[string]*s
 }
 
 func runArgs(d *schema.ResourceData, meta interface{}, logger Logger) (context.Context, ResourceMetaData) {
-	ctx := meta.(*clients.Client).StopContext
+	// NOTE: this is wrapped as a result of this function, so this is "fine" being unwrapped
+	stopContext := meta.(*clients.Client).StopContext
 	client := meta.(*clients.Client)
 	metaData := ResourceMetaData{
 		Client:       client,
@@ -45,5 +46,5 @@ func runArgs(d *schema.ResourceData, meta interface{}, logger Logger) (context.C
 		ResourceData: d,
 	}
 
-	return ctx, metaData
+	return stopContext, metaData
 }

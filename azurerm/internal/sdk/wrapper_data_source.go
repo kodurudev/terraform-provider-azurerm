@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/timeouts"
 )
 
 type DataSourceWrapper struct {
@@ -33,7 +34,9 @@ func (rw *DataSourceWrapper) DataSource() (*schema.Resource, error) {
 		Schema: *resourceSchema,
 		Read: func(d *schema.ResourceData, meta interface{}) error {
 			ctx, metaData := runArgs(d, meta, rw.logger)
-			return rw.dataSource.Read().Func(ctx, metaData)
+			wrappedCtx, cancel := timeouts.ForRead(ctx, d)
+			defer cancel()
+			return rw.dataSource.Read().Func(wrappedCtx, metaData)
 		},
 		Timeouts: &schema.ResourceTimeout{
 			Read: d(rw.dataSource.Read().Timeout),
