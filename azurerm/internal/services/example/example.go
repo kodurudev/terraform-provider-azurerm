@@ -343,13 +343,13 @@ func CreateUpdate() sdk.ResourceFunc {
 				Name:               obj.Name,
 			}
 
-			metadata.Logger.InfoF("Name is %s", obj.Name)
-			metadata.Logger.InfoF("Number is %d", obj.Number)
-			metadata.Logger.InfoF("Float is %d", obj.Float)
-			metadata.Logger.InfoF("Networks are %+v", obj.Networks)
-			metadata.Logger.InfoF("Networks Set is %+v", obj.NetworksSet)
-			metadata.Logger.InfoF("List is %+v", obj.List)
-			metadata.Logger.InfoF("Set is %+v", obj.Set)
+			metadata.Logger.Infof("Name is %s", obj.Name)
+			metadata.Logger.Infof("Number is %d", obj.Number)
+			metadata.Logger.Infof("Float is %d", obj.Float)
+			metadata.Logger.Infof("Networks are %+v", obj.Networks)
+			metadata.Logger.Infof("Networks Set is %+v", obj.NetworksSet)
+			metadata.Logger.Infof("List is %+v", obj.List)
+			metadata.Logger.Infof("Set is %+v", obj.Set)
 
 			metadata.SetID(id)
 			return nil
