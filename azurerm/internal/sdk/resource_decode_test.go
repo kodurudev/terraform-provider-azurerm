@@ -12,303 +12,145 @@ type decodeTestData struct {
 	ExpectError bool
 }
 
-func TestDecode(t *testing.T) {
-	testCases := []struct {
-		Name        string
-		State       map[string]interface{}
-		Expected    *ExampleObj
-		ExpectError bool
-	}{ /*
-			{
-				Name: "top level - name",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-				},
-				ExpectError: false,
+func TestDecode_TopLevelFieldsRequired(t *testing.T) {
+	type SimpleType struct {
+		String        string            `hcl:"string"`
+		Number        int               `hcl:"number"`
+		Price         float64           `hcl:"price"`
+		Enabled       bool              `hcl:"enabled"`
+		ListOfFloats  []float64         `hcl:"list_of_floats"`
+		ListOfNumbers []int             `hcl:"list_of_numbers"`
+		ListOfStrings []string          `hcl:"list_of_strings"`
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`   // TODO: fixme
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
+		MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
+	}
+	decodeTestData{
+		State: map[string]interface{}{
+			"number":  int64(42),
+			"price":   float64(129.99),
+			"string":  "world",
+			"enabled": true,
+			"list_of_floats": []float64{
+				1.0,
+				2.0,
+				3.0,
+				1.234567890,
 			},
-			{
-				Name: "top level - everything",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-					"float": 123.4,
-					"number": 123,
-					"enabled": false,
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-					Float: 123.4,
-					Number: 123,
-					Enabled: false,
-				},
-				ExpectError: false,
+			"list_of_numbers": []int{1, 2, 3},
+			"list_of_strings": []string{
+				"have",
+				"you",
+				"heard",
 			},
-			{
-				Name: "top level - list",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-					"float": 123.4,
-					"number": 123,
-					"enabled": false,
-					"list": []interface{}{
-						map[string]interface{}{
-							"name": "first",
-						},
-					},
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-					Float: 123.4,
-					Number: 123,
-					Enabled: false,
-					List: []NetworkList{{
-						Name: "first",
-					}},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "top level - list in lists",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-					"float": 123.4,
-					"number": 123,
-					"enabled": false,
-					"list": []interface{}{
-						map[string]interface{}{
-							"name": "first",
-							"inner": []interface{}{
-								map[string]interface{}{
-									"name": "get-a-mac",
-								},
-							},
-						},
-					},
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-					Float: 123.4,
-					Number: 123,
-					Enabled: false,
-					List: []NetworkList{{
-						Name: "first",
-						Inner: []NetworkInner{{
-							Name: "get-a-mac",
-						}},
-					}},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "top level - everything",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-					"float": 123.4,
-					"number": 123,
-					"enabled": false,
-					"networks": []interface{}{"network1", "network2", "network3"},
-					"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
-					"list": []interface{}{
-						map[string]interface{}{
-							"name": "first",
-							"inner": []interface{}{
-								map[string]interface{}{
-									"name": "get-a-mac",
-								},
-							},
-						},
-					},
-					"set": schema.NewSet(FakeHashSchema(),
-						[]interface{}{
-							map[string]interface{}{
-								"name": "setname",
-							},
-						}),
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-					Float: 123.4,
-					Number: 123,
-					Enabled: false,
-					Networks: []string{"network1", "network2", "network3"},
-					NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
-					List: []NetworkList{{
-						Name: "first",
-						Inner: []NetworkInner{{
-							Name: "get-a-mac",
-						}},
-					}},
-					Set: []NetworkSet{{
-						Name: "setname",
-					}},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "nests",
-				State: map[string]interface{}{
-					"name": "bingo bango",
-					"float": 123.4,
-					"number": 123,
-					"enabled": false,
-					"networks": []interface{}{"network1", "network2", "network3"},
-					"networks_set": []interface{}{"networkset1", "networkset2", "networkset3"},
-					"list": []interface{}{
-						map[string]interface{}{
-							"name": "first",
-							"inner": []interface{}{
-								map[string]interface{}{
-									"name": "get-a-mac",
-									"inner": []interface{}{
-										map[string]interface{}{
-											"name": "innerinner",
-											"should_be_fine": true,
-										},
-									},
-									"set": schema.NewSet(FakeHashSchema(),
-										[]interface{}{
-											map[string]interface{}{
-												"name": "nestedsetname",
-											},
-										}),
-								},
-							},
-						},
-						map[string]interface{}{
-							"name": "second",
-							"inner": []interface{}{
-								map[string]interface{}{
-									"name": "get-a-mac2",
-									"inner": []interface{}{
-										map[string]interface{}{
-											"name": "innerinner2",
-											"should_be_fine": true,
-										},
-									},
-									"set": schema.NewSet(FakeHashSchema(),
-										[]interface{}{
-											map[string]interface{}{
-												"name": "nestedsetname2",
-											},
-										}),
-								},
-							},
-						},
-					},
-					"set": schema.NewSet(FakeHashSchema(),
-						[]interface{}{
-							map[string]interface{}{
-								"name": "setname",
-							},
-						}),
-				},
-				Expected: &ExampleObj{
-					Name: "bingo bango",
-					Float: 123.4,
-					Number: 123,
-					Enabled: false,
-					Networks: []string{"network1", "network2", "network3"},
-					NetworksSet: []string{"networkset1", "networkset2", "networkset3"},
-					List: []NetworkList{
-						{
-							Name: "first",
-							Inner: []NetworkInner{{
-								Name: "get-a-mac",
-								Inner: []InnerInner{{
-									Name: "innerinner",
-									ShouldBeFine: true,
-								}},
-								Set: []NetworkListSet{{
-									Name: "nestedsetname",
-								}},
-							}},
-						},
-						{
-							Name: "second",
-							Inner: []NetworkInner{{
-								Name: "get-a-mac2",
-								Inner: []InnerInner{{
-									Name: "innerinner2",
-									ShouldBeFine: true,
-								}},
-								Set: []NetworkListSet{{
-									Name: "nestedsetname2",
-								}},
-							}},
-						},
-					},
-					Set: []NetworkSet{{
-						Name: "setname",
-					}},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "top level - int lists/sets",
-				State: map[string]interface{}{
-					"int_list": []interface{}{1,2,3},
-					"int_set": []interface{}{3,4,5},
-				},
-				Expected: &ExampleObj{
-					IntList: []int{1,2,3},
-					IntSet: []int{3,4,5},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "top level - float lists/sets",
-				State: map[string]interface{}{
-					"float_list": []interface{}{1.1,2.2,3.3},
-					"float_set": []interface{}{3.3,4.4,5.5},
-				},
-				Expected: &ExampleObj{
-					FloatList: []float64{1.1,2.2,3.3},
-					FloatSet: []float64{3.3,4.4,5.5},
-				},
-				ExpectError: false,
-			},
-			{
-				Name: "top level - bool lists/sets",
-				State: map[string]interface{}{
-					"bool_list": []interface{}{true,false,true},
-					"bool_set": []interface{}{false,true,false},
-				},
-				Expected: &ExampleObj{
-					BoolList: []bool{true,false,true},
-					BoolSet: []bool{false,true,false},
-				},
-				ExpectError: false,
-			},*/
-		{
-			Name: "top level - map",
-			State: map[string]interface{}{
-				"map": map[string]interface{}{
-					"bingo": "bango",
-				},
-			},
-			Expected: &ExampleObj{
-				Map: map[string]string{
-					"bingo": "bango",
-				},
-			},
-			ExpectError: false,
+			//"map_of_bools": map[string]interface{}{
+			//	"awesome_feature": true,
+			//},
+			//"map_of_numbers": map[string]interface{}{
+			//	"hello": 1,
+			//	"there": 3,
+			//},
+			//"map_of_strings": map[string]interface{}{
+			//	"hello":   "there",
+			//	"salut":   "tous les monde",
+			//	"guten":   "tag",
+			//	"morning": "alvaro",
+			//},
 		},
-	}
-
-	for _, v := range testCases {
-		test := decodeTestData{
-			State:       v.State,
-			Input:       &ExampleObj{},
-			Expected:    v.Expected,
-			ExpectError: v.ExpectError,
-		}
-		test.test(t)
-	}
+		Input: &SimpleType{},
+		Expected: &SimpleType{
+			String:  "world",
+			Number:  42,
+			Price:   129.99,
+			Enabled: true,
+			ListOfFloats: []float64{
+				1.0,
+				2.0,
+				3.0,
+				1.234567890},
+			ListOfNumbers: []int{1, 2, 3},
+			ListOfStrings: []string{
+				"have",
+				"you",
+				"heard",
+			},
+			MapOfBools: map[string]bool{
+				"awesome_feature": true,
+			},
+			MapOfNumbers: map[string]int{
+				"hello": 1,
+				"there": 3,
+			},
+			MapOfStrings: map[string]string{
+				"hello":   "there",
+				"salut":   "tous les monde",
+				"guten":   "tag",
+				"morning": "alvaro",
+			},
+		},
+		ExpectError: false,
+	}.test(t)
 }
 
-func (testData *decodeTestData) test(t *testing.T) {
+func TestDecode_TopLevelFieldsOptional(t *testing.T) {
+	t.Skip("not implemented")
+}
+
+func TestDecode_TopLevelFieldsComputed(t *testing.T) {
+	type SimpleType struct {
+		ComputedString        string   `hcl:"computed_string" computed:"true"`
+		ComputedNumber        int      `hcl:"computed_number" computed:"true"`
+		ComputedBool          bool     `hcl:"computed_bool" computed:"true"`
+		ComputedListOfNumbers []int    `hcl:"computed_list_of_numbers" computed:"true"`
+		ComputedListOfStrings []string `hcl:"computed_list_of_strings" computed:"true"`
+		// TODO: computed maps
+	}
+	decodeTestData{
+		State: map[string]interface{}{
+			"computed_string":          "je suis computed",
+			"computed_number":          int64(732),
+			"computed_bool":            true,
+			"computed_list_of_numbers": []int{1, 2, 3},
+			"computed_list_of_strings": []string{
+				"have",
+				"you",
+				"heard",
+			},
+		},
+		Input: &SimpleType{},
+		Expected: &SimpleType{
+			ComputedString:        "je suis computed",
+			ComputedNumber:        732,
+			ComputedBool:          true,
+			ComputedListOfNumbers: []int{1, 2, 3},
+			ComputedListOfStrings: []string{
+				"have",
+				"you",
+				"heard",
+			},
+		},
+		ExpectError: false,
+	}.test(t)
+}
+
+func TestDecode(t *testing.T) {
+	decodeTestData{
+		State: map[string]interface{}{
+			"map": map[string]interface{}{
+				"bingo": "bango",
+			},
+		},
+		Input: &ExampleObj{},
+		Expected: &ExampleObj{
+			Map: map[string]string{
+				"bingo": "bango",
+			},
+		},
+		ExpectError: false,
+	}.test(t)
+}
+
+func (testData decodeTestData) test(t *testing.T) {
 	debugLogger := ConsoleLogger{}
 	state := testData.stateWrapper()
 	if err := decodeReflectedType(testData.Input, state, debugLogger); err != nil {
@@ -341,6 +183,7 @@ type testDataGetter struct {
 func (td testDataGetter) Get(key string) interface{} {
 	return td.values[key]
 }
+
 func (td testDataGetter) GetOk(key string) (interface{}, bool) {
 	val, ok := td.values[key]
 	return val, ok

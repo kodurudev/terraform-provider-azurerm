@@ -1,6 +1,7 @@
 package sdk
 
 import (
+	"fmt"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -17,6 +18,9 @@ type stateRetriever interface {
 }
 
 func decodeReflectedType(input interface{}, stateRetriever stateRetriever, debugLogger Logger) error {
+	if reflect.TypeOf(input).Kind() != reflect.Ptr {
+		return fmt.Errorf("need a pointer")
+	}
 	objType := reflect.TypeOf(input).Elem()
 	for i := 0; i < objType.NumField(); i++ {
 		field := objType.Field(i)
@@ -79,7 +83,7 @@ func setValue(input, hclValue interface{}, index int, debugLogger Logger) error 
 	}
 
 	if mapConfig, ok := hclValue.(map[string]interface{}); ok {
-		mapOutput := reflect.MakeMap(reflect.TypeOf(map[string]string{}))
+		mapOutput := reflect.MakeMap(reflect.TypeOf(map[string]interface{}{}))
 		for key, val := range mapConfig {
 			mapOutput.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(val))
 		}
