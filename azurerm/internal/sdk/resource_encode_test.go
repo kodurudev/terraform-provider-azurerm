@@ -292,9 +292,9 @@ func TestResourceEncode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 					"price":           float64(0),
 					"string":          "",
 					"enabled":         false,
-					"list_of_floats":  []float64{}, // TODO: currently this needs to be `[]float(nil)`
-					"list_of_numbers": []int{},     // TODO: currently this needs to be `[]int(nil)`
-					"list_of_strings": []string{},  // TODO: currently this needs to be `[]string(nil)`
+					"list_of_floats":  []float64{},
+					"list_of_numbers": []int{},
+					"list_of_strings": []string{},
 					"map_of_bools":    map[string]interface{}{},
 					"map_of_numbers":  map[string]interface{}{},
 					"map_of_strings":  map[string]interface{}{},

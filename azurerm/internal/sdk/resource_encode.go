@@ -63,8 +63,41 @@ func recurse(objType reflect.Type, objVal reflect.Value, debugLogger Logger) (*m
 				sv := fieldVal.Slice(0, fieldVal.Len())
 				attr := make([]interface{}, sv.Len())
 				switch sv.Type() {
-				case reflect.TypeOf([]string{}), reflect.TypeOf([]int{}), reflect.TypeOf([]float64{}), reflect.TypeOf([]bool{}):
+				case reflect.TypeOf([]string{}):
+					debugLogger.Infof("Setting %q to []string", hclTag)
+					if sv.Len() > 0 {
+						output[hclTag] = sv.Interface()
+					} else {
+						output[hclTag] = make([]string, 0)
+					}
+
+				case reflect.TypeOf([]int{}):
+					debugLogger.Infof("Setting %q to []int", hclTag)
+					if sv.Len() > 0 {
+						output[hclTag] = sv.Interface()
+					} else {
+						output[hclTag] = make([]int, 0)
+					}
+
+				case reflect.TypeOf([]float64{}):
+					debugLogger.Infof("Setting %q to []float64", hclTag)
+					if sv.Len() > 0 {
+						output[hclTag] = sv.Interface()
+					} else {
+						output[hclTag] = make([]float64, 0)
+					}
+
+				case reflect.TypeOf([]bool{}):
+					debugLogger.Infof("Setting %q to []bool", hclTag)
+					if sv.Len() > 0 {
+						output[hclTag] = sv.Interface()
+					} else {
+						output[hclTag] = make([]bool, 0)
+					}
+
+				case reflect.TypeOf([]bool{}):
 					debugLogger.Infof("Setting %q to %q", hclTag, sv)
+					debugLogger.Infof("Interface type is %+v", sv.Interface())
 					output[hclTag] = sv.Interface()
 
 				default:
