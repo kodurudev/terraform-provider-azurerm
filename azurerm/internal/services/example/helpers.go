@@ -10,15 +10,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/clients"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/resourceid"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
 	azSchema "github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/tf/schema"
 )
-
-type Logger interface {
-	Info(message string)
-	InfoF(format string, args ...interface{})
-	Warn(message string)
-	WarnF(format string, args ...interface{})
-}
 
 type ResourceRunFunc func(ctx context.Context, metadata ResourceMetaData) error
 
@@ -29,7 +23,7 @@ type ResourceFunc struct {
 
 type ResourceMetaData struct {
 	Client       *clients.Client
-	Logger       Logger
+	Logger       sdk.Logger
 	ResourceData *schema.ResourceData
 }
 
@@ -315,7 +309,7 @@ func (rw ResourceWrapper) Resource() (*schema.Resource, error) {
 	var d = func(duration time.Duration) *time.Duration {
 		return &duration
 	}
-	logger := ExampleLogger{}
+	logger := sdk.ConsoleLogger{}
 
 	resource := schema.Resource{
 		Schema: *resourceSchema,
@@ -379,7 +373,7 @@ func (rw ResourceWrapper) Resource() (*schema.Resource, error) {
 	return &resource, nil
 }
 
-func (rw ResourceWrapper) run(in ResourceFunc, logger Logger) func(d *schema.ResourceData, meta interface{}) error {
+func (rw ResourceWrapper) run(in ResourceFunc, logger sdk.Logger) func(d *schema.ResourceData, meta interface{}) error {
 	return func(d *schema.ResourceData, meta interface{}) error {
 		ctx, metaData := rw.runArgs(d, meta, logger)
 		err := in.Func(ctx, metaData)
@@ -416,7 +410,7 @@ func (rw ResourceWrapper) schema() (*map[string]*schema.Schema, error) {
 	return &out, nil
 }
 
-func (rw ResourceWrapper) runArgs(d *schema.ResourceData, meta interface{}, logger Logger) (context.Context, ResourceMetaData) {
+func (rw ResourceWrapper) runArgs(d *schema.ResourceData, meta interface{}, logger sdk.Logger) (context.Context, ResourceMetaData) {
 	ctx := meta.(*clients.Client).StopContext
 	client := meta.(*clients.Client)
 	metaData := ResourceMetaData{
