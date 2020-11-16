@@ -287,6 +287,7 @@ func TestResourceEncode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 		},
 		Expected: &map[string]interface{}{
 			"inner": []interface{}{
+				// TODO: can we remove the pointer here, and return the value directly? (and on the others)
 				&map[string]interface{}{
 					"number":          int64(0),
 					"price":           float64(0),
