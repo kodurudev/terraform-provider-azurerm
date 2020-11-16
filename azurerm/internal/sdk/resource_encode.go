@@ -75,8 +75,7 @@ func recurse(objType reflect.Type, objVal reflect.Value, debugLogger Logger) (*m
 						nestedValue := sv.Index(i)
 						serialized, err := recurse(nestedType, nestedValue, debugLogger)
 						if err != nil {
-							// TODO: (log?) and return this error
-							panic(err)
+							return nil, fmt.Errorf("serializing nested object %q: %+v", sv.Type(), exists)
 						}
 						attr[i] = serialized
 					}
