@@ -6,6 +6,10 @@ import (
 )
 
 func (rmd *ResourceMetaData) Encode(input interface{}) error {
+	if reflect.TypeOf(input).Kind() != reflect.Ptr {
+		return fmt.Errorf("need a pointer")
+	}
+
 	objType := reflect.TypeOf(input).Elem()
 	objVal := reflect.ValueOf(input).Elem()
 
