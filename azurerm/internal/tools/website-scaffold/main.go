@@ -88,7 +88,7 @@ func getContent(resourceName, brandName string, resourceId *string, isResource b
 	}
 
 	if !isResource {
-		for _, service := range provider.SupportedServices() {
+		for _, service := range provider.SupportedUntypedServices() {
 			for key, ds := range service.SupportedDataSources() {
 				if key == resourceName {
 					generator.resource = ds
@@ -102,7 +102,7 @@ func getContent(resourceName, brandName string, resourceId *string, isResource b
 			return nil, fmt.Errorf("Data Source %q was not registered!", resourceName)
 		}
 	} else {
-		for _, service := range provider.SupportedServices() {
+		for _, service := range provider.SupportedUntypedServices() {
 			for key, rs := range service.SupportedResources() {
 				if key == resourceName {
 					generator.resource = rs

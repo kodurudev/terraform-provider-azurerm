@@ -39,7 +39,7 @@ func azureProvider(supportLegacyTestSuite bool) terraform.ResourceProvider {
 
 	dataSources := make(map[string]*schema.Resource)
 	resources := make(map[string]*schema.Resource)
-	for _, service := range SupportedServices() {
+	for _, service := range SupportedUntypedServices() {
 		debugLog("[DEBUG] Registering Data Sources for %q..", service.Name())
 		for k, v := range service.SupportedDataSources() {
 			if existing := dataSources[k]; existing != nil {

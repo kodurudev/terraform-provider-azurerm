@@ -83,7 +83,7 @@ import (
 
 //go:generate go run ../tools/generator-services/main.go -path=../../../
 
-func SupportedServices() []sdk.UntypedServiceRegistration {
+func SupportedUntypedServices() []sdk.UntypedServiceRegistration {
 	return []sdk.UntypedServiceRegistration{
 		advisor.Registration{},
 		analysisservices.Registration{},

@@ -53,7 +53,7 @@ var services = mapOf(
 )`
 	items := make([]string, 0)
 
-	for _, service := range provider.SupportedServices() {
+	for _, service := range provider.SupportedUntypedServices() {
 		info := reflect.TypeOf(service)
 		packageSegments := strings.Split(info.PkgPath(), "/")
 		packageName := packageSegments[len(packageSegments)-1]
@@ -75,7 +75,7 @@ func (websiteCategoriesGenerator) run(outputFileName string) error {
 	websiteCategories := make([]string, 0)
 
 	// get a distinct list
-	for _, service := range provider.SupportedServices() {
+	for _, service := range provider.SupportedUntypedServices() {
 		for _, category := range service.WebsiteCategories() {
 			if contains(websiteCategories, category) {
 				continue
