@@ -93,7 +93,35 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 }
 
 func TestDecode_TopLevelFieldsOptional(t *testing.T) {
-	t.Skip("not implemented")
+	type SimpleType struct {
+		String        string            `hcl:"string"`
+		Number        int               `hcl:"number"`
+		Price         float64           `hcl:"price"`
+		Enabled       bool              `hcl:"enabled"`
+		ListOfFloats  []float64         `hcl:"list_of_floats"`
+		ListOfNumbers []int             `hcl:"list_of_numbers"`
+		ListOfStrings []string          `hcl:"list_of_strings"`
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		MapOfStrings  map[string]string `hcl:"map_of_strings"`
+	}
+	decodeTestData{
+		State: map[string]interface{}{
+			"number":          int64(0),
+			"price":           float64(0),
+			"string":          "",
+			"enabled":         false,
+			"list_of_floats":  []float64{},
+			"list_of_numbers": []int{},
+			"list_of_strings": []string{},
+			"map_of_bools":    map[string]interface{}{},
+			"map_of_numbers":  map[string]interface{}{},
+			"map_of_strings":  map[string]interface{}{},
+		},
+		Input:       &SimpleType{},
+		Expected:    &SimpleType{},
+		ExpectError: false,
+	}.test(t)
 }
 
 func TestDecode_TopLevelFieldsComputed(t *testing.T) {
@@ -166,7 +194,7 @@ func (testData decodeTestData) test(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(testData.Input, testData.Expected) {
-		t.Fatalf("Expected: %+v\n\n Received %+v\n\n", testData.Input, testData.Expected)
+		t.Fatalf("Expected: %+v\n\n Received %+v\n\n", testData.Expected, testData.Input)
 	}
 }
 
