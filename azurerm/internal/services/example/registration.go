@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
 )
 
 type Registration struct{}
@@ -27,7 +28,7 @@ func (r Registration) SupportedDataSources() map[string]*schema.Resource {
 
 // SupportedResources returns the supported Resources supported by this Service
 func (r Registration) SupportedResources() map[string]*schema.Resource {
-	resources := []Resource{
+	resources := []sdk.Resource{
 		ExampleResource{},
 	}
 	out, err := r.magicGlueCode(resources)
@@ -38,11 +39,11 @@ func (r Registration) SupportedResources() map[string]*schema.Resource {
 	return *out
 }
 
-func (r Registration) magicGlueCode(input []Resource) (*map[string]*schema.Resource, error) {
+func (r Registration) magicGlueCode(input []sdk.Resource) (*map[string]*schema.Resource, error) {
 	out := make(map[string]*schema.Resource, 0)
 
 	for _, v := range input {
-		wrapper := NewResourceWrapper(v)
+		wrapper := sdk.NewResourceWrapper(v)
 		resource, err := wrapper.Resource()
 		if err != nil {
 			return nil, err

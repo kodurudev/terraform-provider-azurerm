@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/sdk"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/network/parse"
 	"github.com/terraform-providers/terraform-provider-azurerm/azurerm/internal/services/network/validate"
 )
@@ -238,13 +239,13 @@ type InnerInner struct {
 	ShouldBeFine bool   `hcl:"should_be_fine"`
 }
 
-func (r ExampleResource) Create() ResourceFunc {
+func (r ExampleResource) Create() sdk.ResourceFunc {
 	return CreateUpdate()
 }
 
-func (r ExampleResource) Read() ResourceFunc {
-	return ResourceFunc{
-		Func: func(ctx context.Context, metadata ResourceMetaData) error {
+func (r ExampleResource) Read() sdk.ResourceFunc {
+	return sdk.ResourceFunc{
+		Func: func(ctx context.Context, metadata sdk.ResourceMetaData) error {
 			return metadata.Encode(&ExampleObj{
 				Name:        "updated",
 				Number:      123,
@@ -306,13 +307,13 @@ func (r ExampleResource) Read() ResourceFunc {
 }
 
 // copy pasta create
-func (r ExampleResource) Update() ResourceFunc {
+func (r ExampleResource) Update() sdk.ResourceFunc {
 	return CreateUpdate()
 }
 
-func (r ExampleResource) Delete() ResourceFunc {
-	return ResourceFunc{
-		Func: func(ctx context.Context, metadata ResourceMetaData) error {
+func (r ExampleResource) Delete() sdk.ResourceFunc {
+	return sdk.ResourceFunc{
+		Func: func(ctx context.Context, metadata sdk.ResourceMetaData) error {
 			return nil
 		},
 		Timeout: 5 * time.Minute,
@@ -323,9 +324,9 @@ func (r ExampleResource) IDValidationFunc() schema.SchemaValidateFunc {
 	return validate.SubnetID
 }
 
-func CreateUpdate() ResourceFunc {
-	return ResourceFunc{
-		Func: func(ctx context.Context, metadata ResourceMetaData) error {
+func CreateUpdate() sdk.ResourceFunc {
+	return sdk.ResourceFunc{
+		Func: func(ctx context.Context, metadata sdk.ResourceMetaData) error {
 			//metadata.ResourceData
 			//metadata.Logger.WarnF("OHHAI %d", 3)
 			//metadata.Client.Account.SubscriptionId
@@ -347,8 +348,8 @@ func CreateUpdate() ResourceFunc {
 			metadata.Logger.InfoF("Float is %d", obj.Float)
 			metadata.Logger.InfoF("Networks are %+v", obj.Networks)
 			metadata.Logger.InfoF("Networks Set is %+v", obj.NetworksSet)
-			metadata.Logger.InfoF("List  is %+v", obj.List)
-			metadata.Logger.InfoF("Set  is %+v", obj.Set)
+			metadata.Logger.InfoF("List is %+v", obj.List)
+			metadata.Logger.InfoF("Set is %+v", obj.Set)
 
 			metadata.SetID(id)
 			return nil
