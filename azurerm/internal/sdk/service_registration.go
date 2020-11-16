@@ -2,6 +2,9 @@ package sdk
 
 import "github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 
+// TypedServiceRegistration is a Service Registration using Types
+// meaning that we can abstract on top of the Plugin SDK and use
+// Native Types where possible
 type TypedServiceRegistration interface {
 	// Name is the name of this Service
 	Name() string
@@ -19,6 +22,9 @@ type TypedServiceRegistration interface {
 	WebsiteCategories() []string
 }
 
+// UntypedServiceRegistration is the interface used for untyped/raw Plugin SDK resources
+// in the future this'll be superseded by the TypedServiceRegistration which allows for
+// stronger Typed resources to be used.
 type UntypedServiceRegistration interface {
 	// Name is the name of this Service
 	Name() string
