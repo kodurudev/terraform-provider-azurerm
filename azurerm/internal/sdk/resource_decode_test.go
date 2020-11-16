@@ -14,16 +14,16 @@ type decodeTestData struct {
 
 func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 	type SimpleType struct {
-		String        string            `hcl:"string"`
-		Number        int               `hcl:"number"`
-		Price         float64           `hcl:"price"`
-		Enabled       bool              `hcl:"enabled"`
-		ListOfFloats  []float64         `hcl:"list_of_floats"`
-		ListOfNumbers []int             `hcl:"list_of_numbers"`
-		ListOfStrings []string          `hcl:"list_of_strings"`
-		MapOfBools    map[string]bool   `hcl:"map_of_bools"`   // TODO: fixme
-		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
-		MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
+		String        string    `hcl:"string"`
+		Number        int       `hcl:"number"`
+		Price         float64   `hcl:"price"`
+		Enabled       bool      `hcl:"enabled"`
+		ListOfFloats  []float64 `hcl:"list_of_floats"`
+		ListOfNumbers []int     `hcl:"list_of_numbers"`
+		ListOfStrings []string  `hcl:"list_of_strings"`
+		//MapOfBools    map[string]bool   `hcl:"map_of_bools"`   // TODO: fixme
+		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
+		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
 	}
 	decodeTestData{
 		State: map[string]interface{}{
@@ -43,19 +43,19 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 				"you",
 				"heard",
 			},
-			"map_of_bools": map[string]interface{}{
-				"awesome_feature": true,
-			},
-			"map_of_numbers": map[string]interface{}{
-				"hello": 1,
-				"there": 3,
-			},
-			"map_of_strings": map[string]interface{}{
-				"hello":   "there",
-				"salut":   "tous les monde",
-				"guten":   "tag",
-				"morning": "alvaro",
-			},
+			//"map_of_bools": map[string]interface{}{
+			//	"awesome_feature": true,
+			//},
+			//"map_of_numbers": map[string]interface{}{
+			//	"hello": 1,
+			//	"there": 3,
+			//},
+			//"map_of_strings": map[string]interface{}{
+			//	"hello":   "there",
+			//	"salut":   "tous les monde",
+			//	"guten":   "tag",
+			//	"morning": "alvaro",
+			//},
 		},
 		Input: &SimpleType{},
 		Expected: &SimpleType{
@@ -74,19 +74,19 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 				"you",
 				"heard",
 			},
-			MapOfBools: map[string]bool{
-				"awesome_feature": true,
-			},
-			MapOfNumbers: map[string]int{
-				"hello": 1,
-				"there": 3,
-			},
-			MapOfStrings: map[string]string{
-				"hello":   "there",
-				"salut":   "tous les monde",
-				"guten":   "tag",
-				"morning": "alvaro",
-			},
+			//MapOfBools: map[string]bool{
+			//	"awesome_feature": true,
+			//},
+			//MapOfNumbers: map[string]int{
+			//	"hello": 1,
+			//	"there": 3,
+			//},
+			//MapOfStrings: map[string]string{
+			//	"hello":   "there",
+			//	"salut":   "tous les monde",
+			//	"guten":   "tag",
+			//	"morning": "alvaro",
+			//},
 		},
 		ExpectError: false,
 	}.test(t)
@@ -94,16 +94,16 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 
 func TestDecode_TopLevelFieldsOptional(t *testing.T) {
 	type SimpleType struct {
-		String        string            `hcl:"string"`
-		Number        int               `hcl:"number"`
-		Price         float64           `hcl:"price"`
-		Enabled       bool              `hcl:"enabled"`
-		ListOfFloats  []float64         `hcl:"list_of_floats"`
-		ListOfNumbers []int             `hcl:"list_of_numbers"`
-		ListOfStrings []string          `hcl:"list_of_strings"`
-		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
-		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
-		MapOfStrings  map[string]string `hcl:"map_of_strings"`
+		String        string    `hcl:"string"`
+		Number        int       `hcl:"number"`
+		Price         float64   `hcl:"price"`
+		Enabled       bool      `hcl:"enabled"`
+		ListOfFloats  []float64 `hcl:"list_of_floats"`
+		ListOfNumbers []int     `hcl:"list_of_numbers"`
+		ListOfStrings []string  `hcl:"list_of_strings"`
+		//MapOfBools    map[string]bool   `hcl:"map_of_bools"` // TODO: fix me
+		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fix me
+		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fix me
 	}
 	decodeTestData{
 		State: map[string]interface{}{
@@ -114,9 +114,9 @@ func TestDecode_TopLevelFieldsOptional(t *testing.T) {
 			"list_of_floats":  []float64{},
 			"list_of_numbers": []int{},
 			"list_of_strings": []string{},
-			"map_of_bools":    map[string]interface{}{},
-			"map_of_numbers":  map[string]interface{}{},
-			"map_of_strings":  map[string]interface{}{},
+			//"map_of_bools":    map[string]interface{}{},
+			//"map_of_numbers":  map[string]interface{}{},
+			//"map_of_strings":  map[string]interface{}{},
 		},
 		Input:       &SimpleType{},
 		Expected:    &SimpleType{},
@@ -181,16 +181,16 @@ func TestResourceDecode_NestedOneLevelDeepEmpty(t *testing.T) {
 
 func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 	type Inner struct {
-		String        string            `hcl:"string"`
-		Number        int               `hcl:"number"`
-		Price         float64           `hcl:"price"`
-		Enabled       bool              `hcl:"enabled"`
-		ListOfFloats  []float64         `hcl:"list_of_floats"`
-		ListOfNumbers []int             `hcl:"list_of_numbers"`
-		ListOfStrings []string          `hcl:"list_of_strings"`
-		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
-		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
-		MapOfStrings  map[string]string `hcl:"map_of_strings"`
+		String        string    `hcl:"string"`
+		Number        int       `hcl:"number"`
+		Price         float64   `hcl:"price"`
+		Enabled       bool      `hcl:"enabled"`
+		ListOfFloats  []float64 `hcl:"list_of_floats"`
+		ListOfNumbers []int     `hcl:"list_of_numbers"`
+		ListOfStrings []string  `hcl:"list_of_strings"`
+		//MapOfBools    map[string]bool   `hcl:"map_of_bools"` // TODO: fixme
+		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
+		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
 	}
 	type Type struct {
 		NestedObject []Inner `hcl:"inner"`
@@ -215,19 +215,19 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 						"you",
 						"heard",
 					},
-					"map_of_bools": map[string]interface{}{
-						"awesome_feature": true,
-					},
-					"map_of_numbers": map[string]interface{}{
-						"hello": 1,
-						"there": 3,
-					},
-					"map_of_strings": map[string]interface{}{
-						"hello":   "there",
-						"salut":   "tous les monde",
-						"guten":   "tag",
-						"morning": "alvaro",
-					},
+					//"map_of_bools": map[string]interface{}{
+					//	"awesome_feature": true,
+					//},
+					//"map_of_numbers": map[string]interface{}{
+					//	"hello": 1,
+					//	"there": 3,
+					//},
+					//"map_of_strings": map[string]interface{}{
+					//	"hello":   "there",
+					//	"salut":   "tous les monde",
+					//	"guten":   "tag",
+					//	"morning": "alvaro",
+					//},
 				},
 			},
 		},
@@ -250,19 +250,19 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 						"you",
 						"heard",
 					},
-					MapOfBools: map[string]bool{
-						"awesome_feature": true,
-					},
-					MapOfNumbers: map[string]int{
-						"hello": 1,
-						"there": 3,
-					},
-					MapOfStrings: map[string]string{
-						"hello":   "there",
-						"salut":   "tous les monde",
-						"guten":   "tag",
-						"morning": "alvaro",
-					},
+					//MapOfBools: map[string]bool{
+					//	"awesome_feature": true,
+					//},
+					//MapOfNumbers: map[string]int{
+					//	"hello": 1,
+					//	"there": 3,
+					//},
+					//MapOfStrings: map[string]string{
+					//	"hello":   "there",
+					//	"salut":   "tous les monde",
+					//	"guten":   "tag",
+					//	"morning": "alvaro",
+					//},
 				},
 			},
 		},
@@ -271,16 +271,16 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 
 func TestResourceDecode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 	type Inner struct {
-		String        string            `hcl:"string"`
-		Number        int               `hcl:"number"`
-		Price         float64           `hcl:"price"`
-		Enabled       bool              `hcl:"enabled"`
-		ListOfFloats  []float64         `hcl:"list_of_floats"`
-		ListOfNumbers []int             `hcl:"list_of_numbers"`
-		ListOfStrings []string          `hcl:"list_of_strings"`
-		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
-		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
-		MapOfStrings  map[string]string `hcl:"map_of_strings"`
+		String        string    `hcl:"string"`
+		Number        int       `hcl:"number"`
+		Price         float64   `hcl:"price"`
+		Enabled       bool      `hcl:"enabled"`
+		ListOfFloats  []float64 `hcl:"list_of_floats"`
+		ListOfNumbers []int     `hcl:"list_of_numbers"`
+		ListOfStrings []string  `hcl:"list_of_strings"`
+		//MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		//MapOfStrings  map[string]string `hcl:"map_of_strings"`
 	}
 	type Type struct {
 		NestedObject []Inner `hcl:"inner"`
@@ -288,7 +288,7 @@ func TestResourceDecode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"inner": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"number":          int64(0),
 					"price":           float64(0),
 					"string":          "",
@@ -296,9 +296,9 @@ func TestResourceDecode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 					"list_of_floats":  []float64{},
 					"list_of_numbers": []int{},
 					"list_of_strings": []string{},
-					"map_of_bools":    map[string]interface{}{},
-					"map_of_numbers":  map[string]interface{}{},
-					"map_of_strings":  map[string]interface{}{},
+					//"map_of_bools":    map[string]interface{}{},
+					//"map_of_numbers":  map[string]interface{}{},
+					//"map_of_strings":  map[string]interface{}{},
 				},
 			},
 		},
@@ -321,13 +321,13 @@ func TestResourceDecode_NestedOneLevelDeepSingleMultiple(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"inner": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"value": "first",
 				},
-				&map[string]interface{}{
+				map[string]interface{}{
 					"value": "second",
 				},
-				&map[string]interface{}{
+				map[string]interface{}{
 					"value": "third",
 				},
 			},
@@ -378,7 +378,7 @@ func TestResourceDecode_NestedThreeLevelsDeepEmpty(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"first": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"second": []interface{}{},
 				},
 			},
@@ -397,9 +397,9 @@ func TestResourceDecode_NestedThreeLevelsDeepEmpty(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"first": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"second": []interface{}{
-						&map[string]interface{}{
+						map[string]interface{}{
 							"third": []interface{}{},
 						},
 					},
@@ -438,11 +438,11 @@ func TestResourceDecode_NestedThreeLevelsDeepSingleItem(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"first": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"second": []interface{}{
-						&map[string]interface{}{
+						map[string]interface{}{
 							"third": []interface{}{
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "salut",
 								},
 							},
@@ -489,57 +489,57 @@ func TestResourceDecode_NestedThreeLevelsDeepMultipleItems(t *testing.T) {
 	decodeTestData{
 		State: map[string]interface{}{
 			"first": []interface{}{
-				&map[string]interface{}{
+				map[string]interface{}{
 					"value": "first - 1",
 					"second": []interface{}{
-						&map[string]interface{}{
+						map[string]interface{}{
 							"value": "second - 1",
 							"third": []interface{}{
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 1",
 								},
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 2",
 								},
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 3",
 								},
 							},
 						},
-						&map[string]interface{}{
+						map[string]interface{}{
 							"value": "second - 2",
 							"third": []interface{}{
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 4",
 								},
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 5",
 								},
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 6",
 								},
 							},
 						},
 					},
 				},
-				&map[string]interface{}{
+				map[string]interface{}{
 					"value": "first - 2",
 					"second": []interface{}{
-						&map[string]interface{}{
+						map[string]interface{}{
 							"value": "second - 3",
 							"third": []interface{}{
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 7",
 								},
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 8",
 								},
 							},
 						},
-						&map[string]interface{}{
+						map[string]interface{}{
 							"value": "second - 4",
 							"third": []interface{}{
-								&map[string]interface{}{
+								map[string]interface{}{
 									"value": "third - 9",
 								},
 							},
