@@ -7,10 +7,20 @@ import (
 )
 
 func (rmd ResourceMetaData) Decode(input interface{}) error {
+	return decodeReflectedType(input, rmd.ResourceData, rmd.serializationDebugLogger)
+}
+
+// stateRetriever is a convenience wrapper around the Plugin SDK to be able to test it more accurately
+type stateRetriever interface {
+	Get(key string) interface{}
+	GetOk(key string) (interface{}, bool)
+}
+
+func decodeReflectedType(input interface{}, stateRetriever stateRetriever, debugLogger Logger) error {
 	objType := reflect.TypeOf(input).Elem()
 	for i := 0; i < objType.NumField(); i++ {
 		field := objType.Field(i)
-		rmd.serializationDebugLogger.Infof("Field", field)
+		debugLogger.Infof("Field", field)
 
 		if val, exists := field.Tag.Lookup("computed"); exists {
 			if val == "true" {
@@ -19,12 +29,12 @@ func (rmd ResourceMetaData) Decode(input interface{}) error {
 		}
 
 		if val, exists := field.Tag.Lookup("hcl"); exists {
-			hclValue := rmd.ResourceData.Get(val)
+			hclValue := stateRetriever.Get(val)
 
-			rmd.serializationDebugLogger.Infof("HCLValue: ", hclValue)
-			rmd.serializationDebugLogger.Infof("Input Type: ", reflect.ValueOf(input).Elem().Field(i).Type())
+			debugLogger.Infof("HCLValue: ", hclValue)
+			debugLogger.Infof("Input Type: ", reflect.ValueOf(input).Elem().Field(i).Type())
 
-			if err := setValue(input, hclValue, i, rmd.serializationDebugLogger); err != nil {
+			if err := setValue(input, hclValue, i, debugLogger); err != nil {
 				return err
 			}
 		}
@@ -33,6 +43,8 @@ func (rmd ResourceMetaData) Decode(input interface{}) error {
 }
 
 func setValue(input, hclValue interface{}, index int, debugLogger Logger) error {
+	// TODO: what if the nested type is Computed?
+
 	if v, ok := hclValue.(string); ok {
 		debugLogger.Infof("[String] Decode %+v", v)
 		debugLogger.Infof("Input %+v", reflect.ValueOf(input))

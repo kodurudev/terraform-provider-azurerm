@@ -5,16 +5,23 @@ import (
 	"testing"
 )
 
+type decodeTestData struct {
+	State       map[string]interface{}
+	Input       interface{}
+	Expected    interface{}
+	ExpectError bool
+}
+
 func TestDecode(t *testing.T) {
 	testCases := []struct {
 		Name        string
-		Input       map[string]interface{}
+		State       map[string]interface{}
 		Expected    *ExampleObj
 		ExpectError bool
 	}{ /*
 			{
 				Name: "top level - name",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 				},
 				Expected: &ExampleObj{
@@ -24,7 +31,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - everything",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 					"float": 123.4,
 					"number": 123,
@@ -40,7 +47,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - list",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 					"float": 123.4,
 					"number": 123,
@@ -64,7 +71,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - list in lists",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 					"float": 123.4,
 					"number": 123,
@@ -96,7 +103,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - everything",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 					"float": 123.4,
 					"number": 123,
@@ -141,7 +148,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "nests",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"name": "bingo bango",
 					"float": 123.4,
 					"number": 123,
@@ -240,7 +247,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - int lists/sets",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"int_list": []interface{}{1,2,3},
 					"int_set": []interface{}{3,4,5},
 				},
@@ -252,7 +259,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - float lists/sets",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"float_list": []interface{}{1.1,2.2,3.3},
 					"float_set": []interface{}{3.3,4.4,5.5},
 				},
@@ -264,7 +271,7 @@ func TestDecode(t *testing.T) {
 			},
 			{
 				Name: "top level - bool lists/sets",
-				Input: map[string]interface{}{
+				State: map[string]interface{}{
 					"bool_list": []interface{}{true,false,true},
 					"bool_set": []interface{}{false,true,false},
 				},
@@ -276,7 +283,7 @@ func TestDecode(t *testing.T) {
 			},*/
 		{
 			Name: "top level - map",
-			Input: map[string]interface{}{
+			State: map[string]interface{}{
 				"map": map[string]interface{}{
 					"bingo": "bango",
 				},
@@ -291,38 +298,50 @@ func TestDecode(t *testing.T) {
 	}
 
 	for _, v := range testCases {
-		obj := &ExampleObj{}
-		if err := decodeHelper(obj, v.Input); err != nil && !v.ExpectError {
-			t.Fatalf("error decoding into obj: %+v", err)
+		test := decodeTestData{
+			State:       v.State,
+			Input:       &ExampleObj{},
+			Expected:    v.Expected,
+			ExpectError: v.ExpectError,
 		}
-
-		if !reflect.DeepEqual(obj, v.Expected) {
-			t.Fatalf("ExampleObj mismatch\n\n Expected: %+v\n\n Received %+v\n\n", v.Expected, obj)
-		}
+		test.test(t)
 	}
 }
 
-func decodeHelper(input interface{}, config map[string]interface{}) error {
-	objType := reflect.TypeOf(input).Elem()
-	logger := ConsoleLogger{}
-
-	for i := 0; i < objType.NumField(); i++ {
-		field := objType.Field(i)
-
-		if val, exists := field.Tag.Lookup("computed"); exists {
-			if val == "true" {
-				continue
-			}
+func (testData *decodeTestData) test(t *testing.T) {
+	debugLogger := ConsoleLogger{}
+	state := testData.stateWrapper()
+	if err := decodeReflectedType(testData.Input, state, debugLogger); err != nil {
+		if testData.ExpectError {
+			// we're good
+			return
 		}
 
-		if val, exists := field.Tag.Lookup("hcl"); exists {
-			hclValue := config[val]
-
-			//TODO Actually check error
-			if err := setValue(input, hclValue, i, logger); err != nil {
-				return err
-			}
-		}
+		t.Fatalf("unexpected error: %+v", err)
 	}
-	return nil
+	if testData.ExpectError {
+		t.Fatalf("expected an error but didn't get one!")
+	}
+
+	if !reflect.DeepEqual(testData.Input, testData.Expected) {
+		t.Fatalf("Expected: %+v\n\n Received %+v\n\n", testData.Input, testData.Expected)
+	}
+}
+
+func (testData decodeTestData) stateWrapper() testDataGetter {
+	return testDataGetter{
+		values: testData.State,
+	}
+}
+
+type testDataGetter struct {
+	values map[string]interface{}
+}
+
+func (td testDataGetter) Get(key string) interface{} {
+	return td.values[key]
+}
+func (td testDataGetter) GetOk(key string) (interface{}, bool) {
+	val, ok := td.values[key]
+	return val, ok
 }
