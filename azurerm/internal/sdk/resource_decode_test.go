@@ -304,6 +304,8 @@ func TestDecode(t *testing.T) {
 
 func decodeHelper(input interface{}, config map[string]interface{}) error {
 	objType := reflect.TypeOf(input).Elem()
+	logger := ConsoleLogger{}
+
 	for i := 0; i < objType.NumField(); i++ {
 		field := objType.Field(i)
 
@@ -317,7 +319,7 @@ func decodeHelper(input interface{}, config map[string]interface{}) error {
 			hclValue := config[val]
 
 			//TODO Actually check error
-			if err := setValue(input, hclValue, i); err != nil {
+			if err := setValue(input, hclValue, i, logger); err != nil {
 				return err
 			}
 		}

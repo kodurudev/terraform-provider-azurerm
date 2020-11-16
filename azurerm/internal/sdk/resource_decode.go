@@ -1,7 +1,6 @@
 package sdk
 
 import (
-	"log"
 	"reflect"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -11,7 +10,7 @@ func (rmd ResourceMetaData) Decode(input interface{}) error {
 	objType := reflect.TypeOf(input).Elem()
 	for i := 0; i < objType.NumField(); i++ {
 		field := objType.Field(i)
-		log.Print("[MATTHEWMATTHEW] Field", field)
+		rmd.serializationDebugLogger.Infof("Field", field)
 
 		if val, exists := field.Tag.Lookup("computed"); exists {
 			if val == "true" {
@@ -22,10 +21,10 @@ func (rmd ResourceMetaData) Decode(input interface{}) error {
 		if val, exists := field.Tag.Lookup("hcl"); exists {
 			hclValue := rmd.ResourceData.Get(val)
 
-			log.Print("[MATTHEWMATTHEW] HCLValue: ", hclValue)
-			log.Print("[MATTHEWMATTHEW] Input Type: ", reflect.ValueOf(input).Elem().Field(i).Type())
+			rmd.serializationDebugLogger.Infof("HCLValue: ", hclValue)
+			rmd.serializationDebugLogger.Infof("Input Type: ", reflect.ValueOf(input).Elem().Field(i).Type())
 
-			if err := setValue(input, hclValue, i); err != nil {
+			if err := setValue(input, hclValue, i, rmd.serializationDebugLogger); err != nil {
 				return err
 			}
 		}
@@ -33,42 +32,41 @@ func (rmd ResourceMetaData) Decode(input interface{}) error {
 	return nil
 }
 
-func setValue(input, hclValue interface{}, index int) error {
+func setValue(input, hclValue interface{}, index int, debugLogger Logger) error {
 	if v, ok := hclValue.(string); ok {
-		log.Printf("[String] Decode %+v", v)
-		log.Printf("Input %+v", reflect.ValueOf(input))
-		log.Printf("Input Elem %+v", reflect.ValueOf(input).Elem())
+		debugLogger.Infof("[String] Decode %+v", v)
+		debugLogger.Infof("Input %+v", reflect.ValueOf(input))
+		debugLogger.Infof("Input Elem %+v", reflect.ValueOf(input).Elem())
 		reflect.ValueOf(input).Elem().Field(index).SetString(v)
 		return nil
 	}
 
 	if v, ok := hclValue.(int); ok {
-		log.Printf("[INT] Decode %+v", v)
+		debugLogger.Infof("[INT] Decode %+v", v)
 		reflect.ValueOf(input).Elem().Field(index).SetInt(int64(v))
 		return nil
 	}
 
 	if v, ok := hclValue.(float64); ok {
-		log.Printf("[Float] Decode %+v", v)
+		debugLogger.Infof("[Float] Decode %+v", v)
 		reflect.ValueOf(input).Elem().Field(index).SetFloat(v)
 		return nil
 	}
 
 	// Doesn't work for empty bools?
 	if v, ok := hclValue.(bool); ok {
-		log.Printf("[BOOL] Decode %+v", v)
+		debugLogger.Infof("[BOOL] Decode %+v", v)
 
 		reflect.ValueOf(input).Elem().Field(index).SetBool(v)
 		return nil
 	}
 
 	if v, ok := hclValue.(*schema.Set); ok {
-		setListValue(input, index, v.List())
+		setListValue(input, index, v.List(), debugLogger)
 		return nil
 	}
 
 	if mapConfig, ok := hclValue.(map[string]interface{}); ok {
-
 		mapOutput := reflect.MakeMap(reflect.TypeOf(map[string]string{}))
 		for key, val := range mapConfig {
 			mapOutput.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(val))
@@ -79,14 +77,14 @@ func setValue(input, hclValue interface{}, index int) error {
 	}
 
 	if v, ok := hclValue.([]interface{}); ok {
-		setListValue(input, index, v)
+		setListValue(input, index, v, debugLogger)
 		return nil
 	}
 
 	return nil
 }
 
-func setListValue(input interface{}, index int, v []interface{}) {
+func setListValue(input interface{}, index int, v []interface{}, debugLogger Logger) {
 	switch fieldType := reflect.ValueOf(input).Elem().Field(index).Type(); fieldType {
 	// TODO do I have to do it this way for the rest of the types?
 	case reflect.TypeOf([]string{}):
@@ -119,15 +117,15 @@ func setListValue(input interface{}, index int, v []interface{}) {
 
 	default:
 		valueToSet := reflect.New(reflect.ValueOf(input).Elem().Field(index).Type())
-		log.Print("[MATTHEWMATTHEW] List Type", valueToSet.Type())
+		debugLogger.Infof("List Type", valueToSet.Type())
 
 		for _, mapVal := range v {
 			if test, ok := mapVal.(map[string]interface{}); ok && test != nil {
 				elem := reflect.New(fieldType.Elem())
-				log.Print("[MATTHEWMATTHEW] element ", elem)
+				debugLogger.Infof("element ", elem)
 				for j := 0; j < elem.Type().Elem().NumField(); j++ {
 					nestedField := elem.Type().Elem().Field(j)
-					log.Print("[MATTHEWMATTHEW] nestedField ", nestedField)
+					debugLogger.Infof("nestedField ", nestedField)
 					if val, exists := nestedField.Tag.Lookup("computed"); exists {
 						if val == "true" {
 							continue
@@ -136,7 +134,7 @@ func setListValue(input interface{}, index int, v []interface{}) {
 
 					if val, exists := nestedField.Tag.Lookup("hcl"); exists {
 						nestedHCLValue := test[val]
-						setValue(elem.Interface(), nestedHCLValue, j)
+						setValue(elem.Interface(), nestedHCLValue, j, debugLogger)
 					}
 				}
 
@@ -150,7 +148,7 @@ func setListValue(input interface{}, index int, v []interface{}) {
 					valueToSet = reflect.Append(valueToSet, elem)
 				}
 
-				log.Print("value to set type after changes", valueToSet.Type())
+				debugLogger.Infof("value to set type after changes", valueToSet.Type())
 			}
 		}
 		fieldToSet := reflect.ValueOf(input).Elem().Field(index)
