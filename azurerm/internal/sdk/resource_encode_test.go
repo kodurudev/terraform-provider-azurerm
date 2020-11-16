@@ -129,6 +129,7 @@ func TestResourceEncode_TopLevelComputed(t *testing.T) {
 		ComputedBool          bool     `hcl:"computed_bool" computed:"true"`
 		ComputedListOfNumbers []int    `hcl:"computed_list_of_numbers" computed:"true"`
 		ComputedListOfStrings []string `hcl:"computed_list_of_strings" computed:"true"`
+		// TODO: computed maps
 	}
 	encodeTestData{
 		Input: &SimpleType{
