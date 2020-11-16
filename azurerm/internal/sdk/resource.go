@@ -47,7 +47,8 @@ type ResourceFunc struct {
 }
 
 type ResourceMetaData struct {
-	Client       *clients.Client
-	Logger       Logger
-	ResourceData *schema.ResourceData
+	Client                   *clients.Client
+	Logger                   Logger
+	ResourceData             *schema.ResourceData
+	serializationDebugLogger Logger
 }

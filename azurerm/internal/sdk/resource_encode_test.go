@@ -602,8 +602,9 @@ func TestResourceEncode_NestedThreeLevelsDeepMultipleItems(t *testing.T) {
 func (testData encodeTestData) test(t *testing.T) {
 	objType := reflect.TypeOf(testData.Input).Elem()
 	objVal := reflect.ValueOf(testData.Input).Elem()
+	debugLogger := ConsoleLogger{}
 
-	output, err := recurse(objType, objVal)
+	output, err := recurse(objType, objVal, debugLogger)
 	if err != nil {
 		if testData.ExpectError {
 			// we're good

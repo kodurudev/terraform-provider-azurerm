@@ -2,7 +2,6 @@ package sdk
 
 import (
 	"fmt"
-	"log"
 	"reflect"
 )
 
@@ -10,7 +9,7 @@ func (rmd *ResourceMetaData) Encode(input interface{}) error {
 	objType := reflect.TypeOf(input).Elem()
 	objVal := reflect.ValueOf(input).Elem()
 
-	serialized, err := recurse(objType, objVal)
+	serialized, err := recurse(objType, objVal, rmd.serializationDebugLogger)
 	if err != nil {
 		return err
 	}
@@ -23,7 +22,7 @@ func (rmd *ResourceMetaData) Encode(input interface{}) error {
 	return nil
 }
 
-func recurse(objType reflect.Type, objVal reflect.Value) (*map[string]interface{}, error) {
+func recurse(objType reflect.Type, objVal reflect.Value, debugLogger Logger) (*map[string]interface{}, error) {
 	output := make(map[string]interface{}, 0)
 	for i := 0; i < objType.NumField(); i++ {
 		field := objType.Field(i)
@@ -32,24 +31,24 @@ func recurse(objType reflect.Type, objVal reflect.Value) (*map[string]interface{
 			switch field.Type.Kind() {
 			case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 				iv := fieldVal.Int()
-				log.Printf("[TOMTOM] Setting %q to %d", hclTag, iv)
+				debugLogger.Infof("Setting %q to %d", hclTag, iv)
 
 				output[hclTag] = iv
 
 			case reflect.Float32, reflect.Float64:
 				fv := fieldVal.Float()
-				log.Printf("[TOMTOM] Setting %q to %f", hclTag, fv)
+				debugLogger.Infof("Setting %q to %f", hclTag, fv)
 
 				output[hclTag] = fv
 
 			case reflect.String:
 				sv := fieldVal.String()
-				log.Printf("[TOMTOM] Setting %q to %q", hclTag, sv)
+				debugLogger.Infof("Setting %q to %q", hclTag, sv)
 				output[hclTag] = sv
 
 			case reflect.Bool:
 				bv := fieldVal.Bool()
-				log.Printf("[BOOL] Setting %q to %t", hclTag, bv)
+				debugLogger.Infof("Setting %q to %t", hclTag, bv)
 				output[hclTag] = bv
 
 			case reflect.Map:
@@ -65,22 +64,23 @@ func recurse(objType reflect.Type, objVal reflect.Value) (*map[string]interface{
 				attr := make([]interface{}, sv.Len())
 				switch sv.Type() {
 				case reflect.TypeOf([]string{}), reflect.TypeOf([]int{}), reflect.TypeOf([]float64{}), reflect.TypeOf([]bool{}):
-					log.Printf("[SLICE] Setting %q to %q", hclTag, sv)
+					debugLogger.Infof("Setting %q to %q", hclTag, sv)
 					output[hclTag] = sv.Interface()
 
 				default:
 					for i := 0; i < sv.Len(); i++ {
-						log.Printf("[SLICE] Index %d is %q", i, sv.Index(i).Interface())
-						log.Printf("[SLICE] Type %+v", sv.Type())
+						debugLogger.Infof("[SLICE] Index %d is %q", i, sv.Index(i).Interface())
+						debugLogger.Infof("[SLICE] Type %+v", sv.Type())
 						nestedType := sv.Index(i).Type()
 						nestedValue := sv.Index(i)
-						serialized, err := recurse(nestedType, nestedValue)
+						serialized, err := recurse(nestedType, nestedValue, debugLogger)
 						if err != nil {
+							// TODO: (log?) and return this error
 							panic(err)
 						}
 						attr[i] = serialized
 					}
-					log.Printf("[SLICE] Setting %q to %+v", hclTag, attr)
+					debugLogger.Infof("[SLICE] Setting %q to %+v", hclTag, attr)
 					output[hclTag] = attr
 				}
 			default:

@@ -41,9 +41,10 @@ func runArgs(d *schema.ResourceData, meta interface{}, logger Logger) (context.C
 	stopContext := meta.(*clients.Client).StopContext
 	client := meta.(*clients.Client)
 	metaData := ResourceMetaData{
-		Client:       client,
-		Logger:       logger,
-		ResourceData: d,
+		Client:                   client,
+		Logger:                   logger,
+		ResourceData:             d,
+		serializationDebugLogger: NullLogger{},
 	}
 
 	return stopContext, metaData
