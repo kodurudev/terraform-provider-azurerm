@@ -63,6 +63,18 @@ func setValue(input, hclValue interface{}, index int, debugLogger Logger) error 
 		return nil
 	}
 
+	if v, ok := hclValue.(int32); ok {
+		debugLogger.Infof("[INT] Decode %+v", v)
+		reflect.ValueOf(input).Elem().Field(index).SetInt(int64(v))
+		return nil
+	}
+
+	if v, ok := hclValue.(int64); ok {
+		debugLogger.Infof("[INT] Decode %+v", v)
+		reflect.ValueOf(input).Elem().Field(index).SetInt(v)
+		return nil
+	}
+
 	if v, ok := hclValue.(float64); ok {
 		debugLogger.Infof("[Float] Decode %+v", v)
 		reflect.ValueOf(input).Elem().Field(index).SetFloat(v)
@@ -83,12 +95,15 @@ func setValue(input, hclValue interface{}, index int, debugLogger Logger) error 
 	}
 
 	if mapConfig, ok := hclValue.(map[string]interface{}); ok {
-		mapOutput := reflect.MakeMap(reflect.TypeOf(map[string]interface{}{}))
+		mapOutput := reflect.MakeMap(reflect.ValueOf(input).Elem().Field(index).Type())
 		for key, val := range mapConfig {
 			mapOutput.SetMapIndex(reflect.ValueOf(key), reflect.ValueOf(val))
 		}
 
-		reflect.ValueOf(input).Elem().Field(index).Set(mapOutput)
+		// TODO Tom, is this how we want to do this?
+		if len(mapConfig) > 0 {
+			reflect.ValueOf(input).Elem().Field(index).Set(mapOutput)
+		}
 		return nil
 	}
 

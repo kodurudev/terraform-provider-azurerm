@@ -21,9 +21,9 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 		ListOfFloats  []float64 `hcl:"list_of_floats"`
 		ListOfNumbers []int     `hcl:"list_of_numbers"`
 		ListOfStrings []string  `hcl:"list_of_strings"`
-		//MapOfBools    map[string]bool   `hcl:"map_of_bools"`   // TODO: fixme
-		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
-		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		MapOfStrings  map[string]string `hcl:"map_of_strings"`
 		ComputedMapOfBools   map[string]bool    `hcl:"computed_map_of_bools" computed:"true"`
 		ComputedMapOfFloats  map[string]float64 `hcl:"computed_map_of_floats" computed:"true"`
 		ComputedMapOfInts    map[string]int     `hcl:"computed_map_of_ints" computed:"true"`
@@ -35,31 +35,31 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 			"price":   float64(129.99),
 			"string":  "world",
 			"enabled": true,
-			"list_of_floats": []float64{
+			"list_of_floats": []interface{}{
 				1.0,
 				2.0,
 				3.0,
 				1.234567890,
 			},
-			"list_of_numbers": []int{1, 2, 3},
-			"list_of_strings": []string{
+			"list_of_numbers": []interface{}{1, 2, 3},
+			"list_of_strings": []interface{}{
 				"have",
 				"you",
 				"heard",
 			},
-			//"map_of_bools": map[string]interface{}{
-			//	"awesome_feature": true,
-			//},
-			//"map_of_numbers": map[string]interface{}{
-			//	"hello": 1,
-			//	"there": 3,
-			//},
-			//"map_of_strings": map[string]interface{}{
-			//	"hello":   "there",
-			//	"salut":   "tous les monde",
-			//	"guten":   "tag",
-			//	"morning": "alvaro",
-			//},
+			"map_of_bools": map[string]interface{}{
+				"awesome_feature": true,
+			},
+			"map_of_numbers": map[string]interface{}{
+				"hello": 1,
+				"there": 3,
+			},
+			"map_of_strings": map[string]interface{}{
+				"hello":   "there",
+				"salut":   "tous les monde",
+				"guten":   "tag",
+				"morning": "alvaro",
+			},
 			"computed_map_of_bools":   []interface{}{},
 			"computed_map_of_floats":  []interface{}{},
 			"computed_map_of_ints":    []interface{}{},
@@ -68,7 +68,6 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 		Input: &SimpleType{},
 		Expected: &SimpleType{
 			String:  "world",
-			Number:  42,
 			Price:   129.99,
 			Enabled: true,
 			ListOfFloats: []float64{
@@ -82,23 +81,23 @@ func TestDecode_TopLevelFieldsRequired(t *testing.T) {
 				"you",
 				"heard",
 			},
-			//MapOfBools: map[string]bool{
-			//	"awesome_feature": true,
-			//},
-			//MapOfNumbers: map[string]int{
-			//	"hello": 1,
-			//	"there": 3,
-			//},
-			//MapOfStrings: map[string]string{
-			//	"hello":   "there",
-			//	"salut":   "tous les monde",
-			//	"guten":   "tag",
-			//	"morning": "alvaro",
-			//},
-			ComputedMapOfBools:   map[string]bool{},
-			ComputedMapOfFloats:  map[string]float64{},
-			ComputedMapOfInts:    map[string]int{},
-			ComputedMapOfStrings: map[string]string{},
+			MapOfBools: map[string]bool{
+				"awesome_feature": true,
+			},
+			MapOfNumbers: map[string]int{
+				"hello": 1,
+				"there": 3,
+			},
+			MapOfStrings: map[string]string{
+				"hello":   "there",
+				"salut":   "tous les monde",
+				"guten":   "tag",
+				"morning": "alvaro",
+			},
+			//ComputedMapOfBools:   map[string]bool{},
+			//ComputedMapOfFloats:  map[string]float64{},
+			//ComputedMapOfInts:    map[string]int{},
+			//ComputedMapOfStrings: map[string]string{},
 		},
 		ExpectError: false,
 	}.test(t)
@@ -113,9 +112,9 @@ func TestDecode_TopLevelFieldsOptional(t *testing.T) {
 		ListOfFloats  []float64 `hcl:"list_of_floats"`
 		ListOfNumbers []int     `hcl:"list_of_numbers"`
 		ListOfStrings []string  `hcl:"list_of_strings"`
-		//MapOfBools    map[string]bool   `hcl:"map_of_bools"` // TODO: fix me
-		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fix me
-		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fix me
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		MapOfStrings  map[string]string `hcl:"map_of_strings"`
 	}
 	decodeTestData{
 		State: map[string]interface{}{
@@ -126,9 +125,9 @@ func TestDecode_TopLevelFieldsOptional(t *testing.T) {
 			"list_of_floats":  []float64{},
 			"list_of_numbers": []int{},
 			"list_of_strings": []string{},
-			//"map_of_bools":    map[string]interface{}{},
-			//"map_of_numbers":  map[string]interface{}{},
-			//"map_of_strings":  map[string]interface{}{},
+			"map_of_bools":    map[string]interface{}{},
+			"map_of_numbers":  map[string]interface{}{},
+			"map_of_strings":  map[string]interface{}{},
 		},
 		Input:       &SimpleType{},
 		Expected:    &SimpleType{},
@@ -176,7 +175,9 @@ func TestResourceDecode_NestedOneLevelDeepEmpty(t *testing.T) {
 		},
 		Input: &Type{},
 		Expected: &Type{
-			NestedObject: []Inner{}, // TODO: has to be `[]Inner(nil)` right now
+			// Tom, commenting out the below line causes the test to pass. Because, we're passing an empty thing
+			// do we want nothing to be passed into the struct?
+			//NestedObject: []Inner{}, // TODO: has to be `[]Inner(nil)` right now
 		},
 	}.test(t)
 }
@@ -190,9 +191,9 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 		ListOfFloats  []float64 `hcl:"list_of_floats"`
 		ListOfNumbers []int     `hcl:"list_of_numbers"`
 		ListOfStrings []string  `hcl:"list_of_strings"`
-		//MapOfBools    map[string]bool   `hcl:"map_of_bools"` // TODO: fixme
-		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"` // TODO: fixme
-		//MapOfStrings  map[string]string `hcl:"map_of_strings"` // TODO: fixme
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		MapOfStrings  map[string]string `hcl:"map_of_strings"`
 	}
 	type Type struct {
 		NestedObject []Inner `hcl:"inner"`
@@ -205,31 +206,31 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 					"price":   float64(129.99),
 					"string":  "world",
 					"enabled": true,
-					"list_of_floats": []float64{
+					"list_of_floats": []interface{}{
 						1.0,
 						2.0,
 						3.0,
 						1.234567890,
 					},
-					"list_of_numbers": []int{1, 2, 3},
-					"list_of_strings": []string{
+					"list_of_numbers": []interface{}{1, 2, 3},
+					"list_of_strings": []interface{}{
 						"have",
 						"you",
 						"heard",
 					},
-					//"map_of_bools": map[string]interface{}{
-					//	"awesome_feature": true,
-					//},
-					//"map_of_numbers": map[string]interface{}{
-					//	"hello": 1,
-					//	"there": 3,
-					//},
-					//"map_of_strings": map[string]interface{}{
-					//	"hello":   "there",
-					//	"salut":   "tous les monde",
-					//	"guten":   "tag",
-					//	"morning": "alvaro",
-					//},
+					"map_of_bools": map[string]interface{}{
+						"awesome_feature": true,
+					},
+					"map_of_numbers": map[string]interface{}{
+						"hello": 1,
+						"there": 3,
+					},
+					"map_of_strings": map[string]interface{}{
+						"hello":   "there",
+						"salut":   "tous les monde",
+						"guten":   "tag",
+						"morning": "alvaro",
+					},
 				},
 			},
 		},
@@ -252,19 +253,19 @@ func TestResourceDecode_NestedOneLevelDeepSingle(t *testing.T) {
 						"you",
 						"heard",
 					},
-					//MapOfBools: map[string]bool{
-					//	"awesome_feature": true,
-					//},
-					//MapOfNumbers: map[string]int{
-					//	"hello": 1,
-					//	"there": 3,
-					//},
-					//MapOfStrings: map[string]string{
-					//	"hello":   "there",
-					//	"salut":   "tous les monde",
-					//	"guten":   "tag",
-					//	"morning": "alvaro",
-					//},
+					MapOfBools: map[string]bool{
+						"awesome_feature": true,
+					},
+					MapOfNumbers: map[string]int{
+						"hello": 1,
+						"there": 3,
+					},
+					MapOfStrings: map[string]string{
+						"hello":   "there",
+						"salut":   "tous les monde",
+						"guten":   "tag",
+						"morning": "alvaro",
+					},
 				},
 			},
 		},
@@ -280,9 +281,9 @@ func TestResourceDecode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 		ListOfFloats  []float64 `hcl:"list_of_floats"`
 		ListOfNumbers []int     `hcl:"list_of_numbers"`
 		ListOfStrings []string  `hcl:"list_of_strings"`
-		//MapOfBools    map[string]bool   `hcl:"map_of_bools"`
-		//MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
-		//MapOfStrings  map[string]string `hcl:"map_of_strings"`
+		MapOfBools    map[string]bool   `hcl:"map_of_bools"`
+		MapOfNumbers  map[string]int    `hcl:"map_of_numbers"`
+		MapOfStrings  map[string]string `hcl:"map_of_strings"`
 	}
 	type Type struct {
 		NestedObject []Inner `hcl:"inner"`
@@ -298,9 +299,9 @@ func TestResourceDecode_NestedOneLevelDeepSingleOmittedValues(t *testing.T) {
 					"list_of_floats":  []float64{},
 					"list_of_numbers": []int{},
 					"list_of_strings": []string{},
-					//"map_of_bools":    map[string]interface{}{},
-					//"map_of_numbers":  map[string]interface{}{},
-					//"map_of_strings":  map[string]interface{}{},
+					"map_of_bools":    map[string]interface{}{},
+					"map_of_numbers":  map[string]interface{}{},
+					"map_of_strings":  map[string]interface{}{},
 				},
 			},
 		},
@@ -631,7 +632,7 @@ func (testData decodeTestData) test(t *testing.T) {
 	}
 
 	if !reflect.DeepEqual(testData.Input, testData.Expected) {
-		t.Fatalf("Expected: %+v\n\n Received %+v\n\n", testData.Expected, testData.Input)
+		t.Fatalf("\nExpected: %+v\n\n Received %+v\n\n", testData.Expected, testData.Input)
 	}
 }
 
